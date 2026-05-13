@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Categories — Admin</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root{--bg:#0b0f1a;--surface:#131929;--surface2:#1a2438;--border:#1e2d45;--accent:#6366f1;--accent2:#06b6d4;--green:#10b981;--yellow:#f59e0b;--red:#ef4444;--text:#e2e8f0;--muted:#64748b;}
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;display:flex;}
+  .sidebar{width:240px;background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;position:fixed;height:100vh;z-index:100;}
+  .sidebar-logo{padding:24px 20px;border-bottom:1px solid var(--border);font-family:'Syne',sans-serif;font-weight:800;font-size:18px;display:flex;align-items:center;gap:10px;}
+  .sidebar-logo span{color:var(--accent2);}
+  .role-badge{margin:0 20px 16px;padding:6px 12px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:6px;font-size:11px;color:var(--accent);font-weight:600;text-transform:uppercase;letter-spacing:1px;text-align:center;}
+  .nav-section{padding:8px 12px;}
+  .nav-label{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1.5px;padding:8px 8px 4px;font-weight:600;}
+  .nav-item{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:8px;margin-bottom:2px;color:var(--muted);font-size:13px;font-weight:500;cursor:pointer;transition:all 0.2s;text-decoration:none;}
+  .nav-item:hover{background:var(--surface2);color:var(--text);}
+  .nav-item.active{background:rgba(99,102,241,0.15);color:var(--accent);}
+  .nav-item .icon{font-size:16px;width:20px;text-align:center;}
+  .sidebar-footer{margin-top:auto;padding:16px 20px;border-top:1px solid var(--border);}
+  .logout-btn{display:flex;align-items:center;gap:8px;padding:8px 12px;border-radius:8px;color:var(--red);cursor:pointer;font-size:13px;transition:background 0.2s;border:none;background:none;width:100%;font-family:inherit;}
+  .main{margin-left:240px;flex:1;padding:28px 32px;}
+  .topbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:28px;}
+  .page-title{font-family:'Syne',sans-serif;font-size:22px;font-weight:800;}
+  .user-chip{display:flex;align-items:center;gap:8px;padding:8px 14px;background:var(--surface);border:1px solid var(--border);border-radius:30px;font-size:13px;}
+  .avatar{width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--accent2));display:flex;align-items:center;justify-content:center;}
+  .btn{padding:10px 18px;border-radius:10px;font-family:'Syne',sans-serif;font-size:13px;font-weight:600;cursor:pointer;border:none;transition:all 0.2s;}
+  .btn-primary{background:var(--accent);color:#fff;}
+  .grid3{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:16px;}
+  .cat-card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:22px;position:relative;overflow:hidden;transition:border-color 0.2s;}
+  .cat-card:hover{border-color:var(--accent);}
+  .cat-card::before{content:'';position:absolute;top:0;left:0;bottom:0;width:3px;}
+  .cat-icon{font-size:36px;margin-bottom:14px;}
+  .cat-name{font-family:'Syne',sans-serif;font-size:16px;font-weight:700;}
+  .cat-desc{font-size:12px;color:var(--muted);margin-top:6px;line-height:1.5;}
+  .cat-count{font-size:24px;font-weight:800;font-family:'Syne',sans-serif;margin-top:14px;}
+  .cat-count-label{font-size:11px;color:var(--muted);}
+  .cat-actions{display:flex;gap:6px;margin-top:14px;}
+  .icon-btn{padding:6px 12px;border-radius:7px;border:1px solid var(--border);background:var(--surface2);cursor:pointer;font-size:12px;color:var(--text);transition:all 0.2s;font-family:'DM Sans',sans-serif;}
+  .icon-btn:hover{background:var(--accent);border-color:var(--accent);}
+  .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.6);backdrop-filter:blur(4px);z-index:1000;display:none;align-items:center;justify-content:center;}
+  .modal-overlay.open{display:flex;}
+  .modal{background:var(--surface);border:1px solid var(--border);border-radius:18px;padding:28px;width:100%;max-width:440px;}
+  .modal-title{font-family:'Syne',sans-serif;font-size:18px;font-weight:800;margin-bottom:20px;}
+  .form-group{margin-bottom:16px;}
+  label{display:block;font-size:12px;color:var(--muted);margin-bottom:6px;text-transform:uppercase;letter-spacing:0.8px;}
+  input,textarea{width:100%;padding:11px 13px;background:var(--bg);border:1px solid var(--border);border-radius:9px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:13px;outline:none;}
+  textarea{resize:vertical;min-height:70px;}
+  .modal-footer{display:flex;gap:10px;justify-content:flex-end;margin-top:22px;}
+  .btn-cancel{padding:10px 18px;border-radius:9px;background:var(--surface2);border:1px solid var(--border);color:var(--text);cursor:pointer;font-family:'DM Sans',sans-serif;}
+  .emoji-picker{display:flex;flex-wrap:wrap;gap:8px;}
+  .emoji-opt{width:38px;height:38px;border-radius:8px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:20px;background:var(--bg);border:1px solid var(--border);transition:all 0.2s;}
+  .emoji-opt:hover,.emoji-opt.sel{background:var(--accent);border-color:var(--accent);}
+</style>
+</head>
+<body>
+<aside class="sidebar">
+  <div class="sidebar-logo"><span>🏫</span> School<span>Asset</span></div>
+  <div class="role-badge">👑 Admin Panel</div>
+  <nav class="nav-section">
+    <div class="nav-label">Overview</div>
+    <a class="nav-item" href="admin-dashboard.html"><span class="icon">📊</span> Dashboard</a>
+    <div class="nav-label">Asset Management</div>
+    <a class="nav-item" href="admin-assets.html"><span class="icon">📦</span> All Assets</a>
+    <a class="nav-item" href="admin-add-asset.html"><span class="icon">➕</span> Add Asset</a>
+    <a class="nav-item active" href="admin-categories.html"><span class="icon">🗂️</span> Categories</a>
+    <div class="nav-label">Operations</div>
+    <a class="nav-item" href="admin-borrowing.html"><span class="icon">🔄</span> Borrowing</a>
+    <a class="nav-item" href="admin-maintenance.html"><span class="icon">🔧</span> Maintenance</a>
+    <a class="nav-item" href="admin-reports.html"><span class="icon">📋</span> Reports</a>
+    <div class="nav-label">System</div>
+    <a class="nav-item" href="admin-users.html"><span class="icon">👥</span> Users</a>
+  </nav>
+  <div class="sidebar-footer"><button class="logout-btn" onclick="logout()">🚪 Logout</button></div>
+</aside>
+<main class="main">
+  <div class="topbar">
+    <div class="page-title">Asset Categories</div>
+    <div style="display:flex;gap:12px;align-items:center;">
+      <button class="btn btn-primary" onclick="openModal()">🗂️ Add Category</button>
+      <div class="user-chip"><div class="avatar">👑</div> <span id="uname">Admin</span></div>
+    </div>
+  </div>
+  <div class="grid3" id="catGrid"></div>
+</main>
+<div class="modal-overlay" id="modal">
+  <div class="modal">
+    <div class="modal-title">Add Category</div>
+    <div class="form-group"><label>Category Name</label><input id="cName" placeholder="e.g. Sports Equipment"></div>
+    <div class="form-group"><label>Description</label><textarea id="cDesc" placeholder="Brief description..."></textarea></div>
+    <div class="form-group"><label>Icon</label>
+      <div class="emoji-picker" id="emojiPicker"></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-cancel" onclick="closeModal()">Cancel</button>
+      <button class="btn btn-primary" onclick="saveCategory()">Save</button>
+    </div>
+  </div>
+</div>
+<script>
+  if(!sessionStorage.getItem('role')||sessionStorage.getItem('role')!=='admin') window.location.href='login.html';
+  document.getElementById('uname').textContent=sessionStorage.getItem('user')||'Admin';
+  const emojis=['💻','📡','🪑','🔬','⚽','📚','🖨️','📷','🔭','🎵','🏋️','🔑','🗃️','🖥️','📱'];
+  let selectedEmoji=emojis[0];
+  const palette=['#6366f1','#06b6d4','#10b981','#f59e0b','#ef4444','#f97316','#a855f7','#ec4899'];
+  let cats=JSON.parse(localStorage.getItem('categories')||'null')||[
+    {id:1,name:'IT Equipment',icon:'💻',desc:'Computers, laptops, printers, network devices',color:'#6366f1'},
+    {id:2,name:'AV Equipment',icon:'📡',desc:'Projectors, speakers, cameras, microphones',color:'#06b6d4'},
+    {id:3,name:'Furniture',icon:'🪑',desc:'Chairs, desks, tables, cabinets',color:'#10b981'},
+    {id:4,name:'Lab Equipment',icon:'🔬',desc:'Microscopes, science kits, chemistry equipment',color:'#f59e0b'},
+    {id:5,name:'Sports Equipment',icon:'⚽',desc:'Balls, nets, gym equipment',color:'#ef4444'},
+    {id:6,name:'Library',icon:'📚',desc:'Books, reference materials, reading equipment',color:'#a855f7'},
+  ];
+  function saveCats(){localStorage.setItem('categories',JSON.stringify(cats));}
+  function countAssets(name){
+    const assets=JSON.parse(localStorage.getItem('assets')||'[]');
+    return assets.filter(a=>a.cat===name).length||Math.floor(Math.random()*50+10);
+  }
+  function render(){
+    document.getElementById('catGrid').innerHTML=cats.map((c,i)=>`
+      <div class="cat-card" style="--c:${c.color}">
+        <div style="position:absolute;top:0;left:0;bottom:0;width:3px;background:${c.color}"></div>
+        <div class="cat-icon">${c.icon}</div>
+        <div class="cat-name">${c.name}</div>
+        <div class="cat-desc">${c.desc}</div>
+        <div class="cat-count" style="color:${c.color}">${countAssets(c.name)}</div>
+        <div class="cat-count-label">assets registered</div>
+        <div class="cat-actions">
+          <button class="icon-btn" onclick="delCat(${i})">🗑️ Delete</button>
+        </div>
+      </div>`).join('');
+  }
+  function delCat(i){if(confirm('Delete category?')){cats.splice(i,1);saveCats();render();}}
+  // Emoji picker
+  document.getElementById('emojiPicker').innerHTML=emojis.map((e,i)=>`<div class="emoji-opt ${i===0?'sel':''}" onclick="selectEmoji(this,'${e}')">${e}</div>`).join('');
+  function selectEmoji(el,e){
+    selectedEmoji=e;
+    document.querySelectorAll('.emoji-opt').forEach(x=>x.classList.remove('sel'));
+    el.classList.add('sel');
+  }
+  function openModal(){document.getElementById('modal').classList.add('open');}
+  function closeModal(){document.getElementById('modal').classList.remove('open');}
+  function saveCategory(){
+    const name=document.getElementById('cName').value.trim();
+    const desc=document.getElementById('cDesc').value;
+    if(!name){alert('Enter a category name.');return;}
+    cats.push({id:Date.now(),name,icon:selectedEmoji,desc,color:palette[cats.length%palette.length]});
+    saveCats();closeModal();render();
+    document.getElementById('cName').value='';document.getElementById('cDesc').value='';
+  }
+  function logout(){sessionStorage.clear();window.location.href='login.html';}
+  render();
+</script>
+</body>
+</html>

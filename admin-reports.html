@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Reports — Admin</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root{--bg:#0b0f1a;--surface:#131929;--surface2:#1a2438;--border:#1e2d45;--accent:#6366f1;--accent2:#06b6d4;--green:#10b981;--yellow:#f59e0b;--red:#ef4444;--text:#e2e8f0;--muted:#64748b;}
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;display:flex;}
+  .sidebar{width:240px;background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;position:fixed;height:100vh;z-index:100;}
+  .sidebar-logo{padding:24px 20px;border-bottom:1px solid var(--border);font-family:'Syne',sans-serif;font-weight:800;font-size:18px;display:flex;align-items:center;gap:10px;}
+  .sidebar-logo span{color:var(--accent2);}
+  .role-badge{margin:0 20px 16px;padding:6px 12px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:6px;font-size:11px;color:var(--accent);font-weight:600;text-transform:uppercase;letter-spacing:1px;text-align:center;}
+  .nav-section{padding:8px 12px;}
+  .nav-label{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1.5px;padding:8px 8px 4px;font-weight:600;}
+  .nav-item{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:8px;margin-bottom:2px;color:var(--muted);font-size:13px;font-weight:500;cursor:pointer;transition:all 0.2s;text-decoration:none;}
+  .nav-item:hover{background:var(--surface2);color:var(--text);}
+  .nav-item.active{background:rgba(99,102,241,0.15);color:var(--accent);}
+  .nav-item .icon{font-size:16px;width:20px;text-align:center;}
+  .sidebar-footer{margin-top:auto;padding:16px 20px;border-top:1px solid var(--border);}
+  .logout-btn{display:flex;align-items:center;gap:8px;padding:8px 12px;border-radius:8px;color:var(--red);cursor:pointer;font-size:13px;transition:background 0.2s;border:none;background:none;width:100%;font-family:inherit;}
+  .main{margin-left:240px;flex:1;padding:28px 32px;}
+  .topbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:28px;}
+  .page-title{font-family:'Syne',sans-serif;font-size:22px;font-weight:800;}
+  .user-chip{display:flex;align-items:center;gap:8px;padding:8px 14px;background:var(--surface);border:1px solid var(--border);border-radius:30px;font-size:13px;}
+  .avatar{width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--accent2));display:flex;align-items:center;justify-content:center;}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:20px;}
+  .panel{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:22px;}
+  .panel-title{font-family:'Syne',sans-serif;font-size:15px;font-weight:700;margin-bottom:18px;}
+  .chart-bar-wrap{display:flex;flex-direction:column;gap:10px;}
+  .bar-row{display:flex;align-items:center;gap:10px;font-size:12px;}
+  .bar-label{width:120px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .bar-track{flex:1;height:10px;background:var(--surface2);border-radius:999px;overflow:hidden;}
+  .bar-fill{height:100%;border-radius:999px;transition:width 1s ease;}
+  .bar-val{width:30px;text-align:right;font-weight:600;font-size:12px;}
+  .donut-wrap{display:flex;align-items:center;gap:24px;justify-content:center;}
+  .donut{position:relative;width:140px;height:140px;}
+  .donut svg{transform:rotate(-90deg);}
+  .donut-center{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;}
+  .donut-val{font-family:'Syne',sans-serif;font-size:24px;font-weight:800;}
+  .donut-lbl{font-size:10px;color:var(--muted);}
+  .legend{display:flex;flex-direction:column;gap:8px;}
+  .legend-item{display:flex;align-items:center;gap:8px;font-size:12px;}
+  .legend-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;}
+  .export-btns{display:flex;gap:10px;margin-bottom:20px;}
+  .btn{padding:10px 18px;border-radius:10px;font-family:'Syne',sans-serif;font-size:13px;font-weight:600;cursor:pointer;border:none;transition:all 0.2s;}
+  .btn-outline{background:transparent;border:1px solid var(--border);color:var(--text);}
+  .btn-outline:hover{background:var(--accent);border-color:var(--accent);color:#fff;}
+  .summary-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:20px;}
+  .summary-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px;text-align:center;}
+  .summary-icon{font-size:24px;margin-bottom:8px;}
+  .summary-val{font-family:'Syne',sans-serif;font-size:22px;font-weight:800;}
+  .summary-lbl{font-size:11px;color:var(--muted);margin-top:4px;}
+</style>
+</head>
+<body>
+<aside class="sidebar">
+  <div class="sidebar-logo"><span>🏫</span> School<span>Asset</span></div>
+  <div class="role-badge">👑 Admin Panel</div>
+  <nav class="nav-section">
+    <div class="nav-label">Overview</div>
+    <a class="nav-item" href="admin-dashboard.html"><span class="icon">📊</span> Dashboard</a>
+    <div class="nav-label">Asset Management</div>
+    <a class="nav-item" href="admin-assets.html"><span class="icon">📦</span> All Assets</a>
+    <a class="nav-item" href="admin-add-asset.html"><span class="icon">➕</span> Add Asset</a>
+    <a class="nav-item" href="admin-categories.html"><span class="icon">🗂️</span> Categories</a>
+    <div class="nav-label">Operations</div>
+    <a class="nav-item" href="admin-borrowing.html"><span class="icon">🔄</span> Borrowing</a>
+    <a class="nav-item" href="admin-maintenance.html"><span class="icon">🔧</span> Maintenance</a>
+    <a class="nav-item active" href="admin-reports.html"><span class="icon">📋</span> Reports</a>
+    <div class="nav-label">System</div>
+    <a class="nav-item" href="admin-users.html"><span class="icon">👥</span> Users</a>
+  </nav>
+  <div class="sidebar-footer"><button class="logout-btn" onclick="logout()">🚪 Logout</button></div>
+</aside>
+<main class="main">
+  <div class="topbar">
+    <div class="page-title">Reports & Analytics</div>
+    <div class="user-chip"><div class="avatar">👑</div> <span id="uname">Admin</span></div>
+  </div>
+  <div class="export-btns">
+    <button class="btn btn-outline" onclick="printReport()">🖨️ Print Report</button>
+    <button class="btn btn-outline" onclick="exportCSV()">📥 Export CSV</button>
+  </div>
+  <div class="summary-grid">
+    <div class="summary-card"><div class="summary-icon">📦</div><div class="summary-val" id="rTotal">0</div><div class="summary-lbl">Total Assets</div></div>
+    <div class="summary-card"><div class="summary-icon">✅</div><div class="summary-val" id="rAvail">0</div><div class="summary-lbl">Available</div></div>
+    <div class="summary-card"><div class="summary-icon">🔄</div><div class="summary-val" id="rBorrow">0</div><div class="summary-lbl">Borrowed</div></div>
+    <div class="summary-card"><div class="summary-icon">🔧</div><div class="summary-val" id="rMaint">0</div><div class="summary-lbl">Maintenance</div></div>
+  </div>
+  <div class="grid2">
+    <div class="panel">
+      <div class="panel-title">Assets by Category</div>
+      <div class="chart-bar-wrap" id="catChart"></div>
+    </div>
+    <div class="panel">
+      <div class="panel-title">Status Distribution</div>
+      <div class="donut-wrap">
+        <div class="donut">
+          <svg width="140" height="140" viewBox="0 0 140 140">
+            <circle cx="70" cy="70" r="54" fill="none" stroke="var(--surface2)" stroke-width="16"/>
+            <circle id="dAvail" cx="70" cy="70" r="54" fill="none" stroke="var(--green)" stroke-width="16" stroke-dasharray="339.3" stroke-dashoffset="339.3"/>
+            <circle id="dBorrow" cx="70" cy="70" r="54" fill="none" stroke="var(--yellow)" stroke-width="16" stroke-dasharray="339.3" stroke-dashoffset="339.3"/>
+            <circle id="dMaint" cx="70" cy="70" r="54" fill="none" stroke="var(--red)" stroke-width="16" stroke-dasharray="339.3" stroke-dashoffset="339.3"/>
+          </svg>
+          <div class="donut-center"><div class="donut-val" id="dTotal">0</div><div class="donut-lbl">Total</div></div>
+        </div>
+        <div class="legend" id="legend"></div>
+      </div>
+    </div>
+  </div>
+  <div class="panel">
+    <div class="panel-title">Recent Borrowing Summary</div>
+    <div id="borrowSummary" style="color:var(--muted);font-size:13px;text-align:center;padding:20px">Loading...</div>
+  </div>
+</main>
+<script>
+  if(!sessionStorage.getItem('role')||sessionStorage.getItem('role')!=='admin') window.location.href='login.html';
+  document.getElementById('uname').textContent=sessionStorage.getItem('user')||'Admin';
+  function logout(){sessionStorage.clear();window.location.href='login.html';}
+
+  const assets=JSON.parse(localStorage.getItem('assets')||'[]');
+  const borrows=JSON.parse(localStorage.getItem('borrows')||'[]');
+  const total=assets.length;
+  const avail=assets.filter(a=>a.status==='Available').length;
+  const borrow=assets.filter(a=>a.status==='Borrowed').length;
+  const maint=assets.filter(a=>a.status==='Maintenance').length;
+
+  document.getElementById('rTotal').textContent=total||'248';
+  document.getElementById('rAvail').textContent=avail||'186';
+  document.getElementById('rBorrow').textContent=borrow||'42';
+  document.getElementById('rMaint').textContent=maint||'20';
+
+  // Category chart
+  const cats={};
+  assets.forEach(a=>{cats[a.cat]=(cats[a.cat]||0)+1;});
+  if(!Object.keys(cats).length){Object.assign(cats,{'IT Equipment':85,'AV Equipment':42,'Furniture':76,'Lab Equipment':45});}
+  const maxVal=Math.max(...Object.values(cats));
+  const colors=['#6366f1','#06b6d4','#10b981','#f59e0b','#f97316'];
+  document.getElementById('catChart').innerHTML=Object.entries(cats).map(([k,v],i)=>`
+    <div class="bar-row">
+      <div class="bar-label">${k}</div>
+      <div class="bar-track"><div class="bar-fill" style="width:${(v/maxVal*100)}%;background:${colors[i%colors.length]}"></div></div>
+      <div class="bar-val" style="color:${colors[i%colors.length]}">${v}</div>
+    </div>`).join('');
+
+  // Donut
+  const t2=total||248, a2=avail||186, b2=borrow||42, m2=maint||20;
+  const circ=339.3;
+  const aOff=circ*(1-a2/t2);
+  const bOff=circ*(1-b2/t2);
+  const mOff=circ*(1-m2/t2);
+  setTimeout(()=>{
+    document.getElementById('dAvail').style.strokeDashoffset=aOff;
+    document.getElementById('dAvail').style.transition='stroke-dashoffset 1s ease';
+    document.getElementById('dBorrow').style.strokeDashoffset=bOff;
+    document.getElementById('dBorrow').style.transition='stroke-dashoffset 1.2s ease';
+    document.getElementById('dMaint').style.strokeDashoffset=mOff;
+    document.getElementById('dMaint').style.transition='stroke-dashoffset 1.4s ease';
+  },200);
+  document.getElementById('dTotal').textContent=t2;
+  document.getElementById('legend').innerHTML=`
+    <div class="legend-item"><div class="legend-dot" style="background:var(--green)"></div>Available (${a2})</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--yellow)"></div>Borrowed (${b2})</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--red)"></div>Maintenance (${m2})</div>`;
+
+  // Borrow summary
+  if(borrows.length){
+    document.getElementById('borrowSummary').innerHTML=`<table style="width:100%;border-collapse:collapse">
+      <thead><tr><th style="text-align:left;padding:8px;font-size:11px;color:var(--muted);border-bottom:1px solid var(--border)">Asset</th><th style="text-align:left;padding:8px;font-size:11px;color:var(--muted);border-bottom:1px solid var(--border)">Borrower</th><th style="padding:8px;font-size:11px;color:var(--muted);border-bottom:1px solid var(--border)">Status</th></tr></thead>
+      <tbody>${borrows.slice(0,5).map(b=>`<tr><td style="padding:10px 8px;font-size:13px">${b.asset}</td><td style="padding:10px 8px;font-size:13px">${b.borrower}</td><td style="padding:10px 8px;font-size:13px"><span style="padding:2px 8px;border-radius:4px;font-size:11px;background:${b.status==='Returned'?'rgba(16,185,129,0.15)':b.status==='Overdue'?'rgba(239,68,68,0.15)':'rgba(245,158,11,0.15)'};color:${b.status==='Returned'?'var(--green)':b.status==='Overdue'?'var(--red)':'var(--yellow)'}">${b.status}</span></td></tr>`).join('')}</tbody>
+    </table>`;
+  } else {
+    document.getElementById('borrowSummary').textContent='No borrowing records yet.';
+  }
+  function printReport(){window.print();}
+  function exportCSV(){
+    const csv=['Asset Name,Category,Status,Location',...(assets.length?assets:['Dell Laptop #12,IT Equipment,Available,Room 201']).map(a=>typeof a==='string'?a:`${a.name},${a.cat},${a.status},${a.loc}`)].join('\n');
+    const blob=new Blob([csv],{type:'text/csv'});
+    const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='asset-report.csv';a.click();
+  }
+</script>
+</body>
+</html>

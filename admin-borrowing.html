@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Borrowing Management — Admin</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root{--bg:#0b0f1a;--surface:#131929;--surface2:#1a2438;--border:#1e2d45;--accent:#6366f1;--accent2:#06b6d4;--green:#10b981;--yellow:#f59e0b;--red:#ef4444;--text:#e2e8f0;--muted:#64748b;}
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;display:flex;}
+  .sidebar{width:240px;background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;position:fixed;height:100vh;z-index:100;}
+  .sidebar-logo{padding:24px 20px;border-bottom:1px solid var(--border);font-family:'Syne',sans-serif;font-weight:800;font-size:18px;display:flex;align-items:center;gap:10px;}
+  .sidebar-logo span{color:var(--accent2);}
+  .role-badge{margin:0 20px 16px;padding:6px 12px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:6px;font-size:11px;color:var(--accent);font-weight:600;text-transform:uppercase;letter-spacing:1px;text-align:center;}
+  .nav-section{padding:8px 12px;}
+  .nav-label{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1.5px;padding:8px 8px 4px;font-weight:600;}
+  .nav-item{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:8px;margin-bottom:2px;color:var(--muted);font-size:13px;font-weight:500;cursor:pointer;transition:all 0.2s;text-decoration:none;}
+  .nav-item:hover{background:var(--surface2);color:var(--text);}
+  .nav-item.active{background:rgba(99,102,241,0.15);color:var(--accent);}
+  .nav-item .icon{font-size:16px;width:20px;text-align:center;}
+  .sidebar-footer{margin-top:auto;padding:16px 20px;border-top:1px solid var(--border);}
+  .logout-btn{display:flex;align-items:center;gap:8px;padding:8px 12px;border-radius:8px;color:var(--red);cursor:pointer;font-size:13px;transition:background 0.2s;border:none;background:none;width:100%;font-family:inherit;}
+  .logout-btn:hover{background:rgba(239,68,68,0.1);}
+  .main{margin-left:240px;flex:1;padding:28px 32px;}
+  .topbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:28px;}
+  .page-title{font-family:'Syne',sans-serif;font-size:22px;font-weight:800;}
+  .user-chip{display:flex;align-items:center;gap:8px;padding:8px 14px;background:var(--surface);border:1px solid var(--border);border-radius:30px;font-size:13px;}
+  .avatar{width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--accent2));display:flex;align-items:center;justify-content:center;font-size:12px;}
+  .tabs{display:flex;gap:0;border-bottom:2px solid var(--border);margin-bottom:24px;}
+  .tab{padding:10px 20px;font-size:13px;font-weight:600;cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-2px;color:var(--muted);transition:all 0.2s;font-family:'Syne',sans-serif;}
+  .tab.active{color:var(--accent);border-color:var(--accent);}
+  .btn{padding:10px 18px;border-radius:10px;font-family:'Syne',sans-serif;font-size:13px;font-weight:600;cursor:pointer;border:none;transition:all 0.2s;}
+  .btn-primary{background:var(--accent);color:#fff;}
+  .panel{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:22px;}
+  .toolbar{display:flex;gap:12px;margin-bottom:18px;}
+  .search-bar{flex:1;padding:10px 14px;background:var(--surface);border:1px solid var(--border);border-radius:10px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:13px;outline:none;}
+  .search-bar:focus{border-color:var(--accent);}
+  table{width:100%;border-collapse:collapse;}
+  th{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;padding:10px 14px;text-align:left;border-bottom:1px solid var(--border);}
+  td{padding:13px 14px;font-size:13px;border-bottom:1px solid rgba(30,45,69,0.5);}
+  tr:last-child td{border-bottom:none;}
+  tr:hover td{background:rgba(255,255,255,0.02);}
+  .status-badge{display:inline-block;padding:3px 9px;border-radius:5px;font-size:11px;font-weight:600;}
+  .s-active{background:rgba(245,158,11,0.15);color:var(--yellow);}
+  .s-returned{background:rgba(16,185,129,0.15);color:var(--green);}
+  .s-overdue{background:rgba(239,68,68,0.15);color:var(--red);}
+  .icon-btn{width:30px;height:30px;border-radius:7px;border:1px solid var(--border);background:var(--surface2);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:14px;transition:all 0.2s;}
+  .icon-btn:hover{background:var(--green);border-color:var(--green);}
+  .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.6);backdrop-filter:blur(4px);z-index:1000;display:none;align-items:center;justify-content:center;}
+  .modal-overlay.open{display:flex;}
+  .modal{background:var(--surface);border:1px solid var(--border);border-radius:18px;padding:28px;width:100%;max-width:480px;}
+  .modal-title{font-family:'Syne',sans-serif;font-size:18px;font-weight:800;margin-bottom:20px;}
+  .form-group{margin-bottom:16px;}
+  label{display:block;font-size:12px;color:var(--muted);margin-bottom:6px;text-transform:uppercase;letter-spacing:0.8px;}
+  input,select.fi{width:100%;padding:11px 13px;background:var(--bg);border:1px solid var(--border);border-radius:9px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:13px;outline:none;}
+  input:focus{border-color:var(--accent);}
+  .modal-footer{display:flex;gap:10px;justify-content:flex-end;margin-top:22px;}
+  .btn-cancel{padding:10px 18px;border-radius:9px;background:var(--surface2);border:1px solid var(--border);color:var(--text);cursor:pointer;font-family:'DM Sans',sans-serif;}
+  .overdue-warning{background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.2);border-radius:10px;padding:12px 16px;font-size:13px;color:var(--red);margin-bottom:18px;display:flex;align-items:center;gap:8px;}
+</style>
+</head>
+<body>
+<aside class="sidebar">
+  <div class="sidebar-logo"><span>🏫</span> School<span>Asset</span></div>
+  <div class="role-badge">👑 Admin Panel</div>
+  <nav class="nav-section">
+    <div class="nav-label">Overview</div>
+    <a class="nav-item" href="admin-dashboard.html"><span class="icon">📊</span> Dashboard</a>
+    <div class="nav-label">Asset Management</div>
+    <a class="nav-item" href="admin-assets.html"><span class="icon">📦</span> All Assets</a>
+    <a class="nav-item" href="admin-add-asset.html"><span class="icon">➕</span> Add Asset</a>
+    <a class="nav-item" href="admin-categories.html"><span class="icon">🗂️</span> Categories</a>
+    <div class="nav-label">Operations</div>
+    <a class="nav-item active" href="admin-borrowing.html"><span class="icon">🔄</span> Borrowing</a>
+    <a class="nav-item" href="admin-maintenance.html"><span class="icon">🔧</span> Maintenance</a>
+    <a class="nav-item" href="admin-reports.html"><span class="icon">📋</span> Reports</a>
+    <div class="nav-label">System</div>
+    <a class="nav-item" href="admin-users.html"><span class="icon">👥</span> Users</a>
+  </nav>
+  <div class="sidebar-footer"><button class="logout-btn" onclick="logout()">🚪 Logout</button></div>
+</aside>
+<main class="main">
+  <div class="topbar">
+    <div class="page-title">Borrowing Management</div>
+    <div style="display:flex;gap:12px;align-items:center;">
+      <button class="btn btn-primary" onclick="openModal()">➕ New Borrow Request</button>
+      <div class="user-chip"><div class="avatar">👑</div> <span id="uname">Admin</span></div>
+    </div>
+  </div>
+  <div class="overdue-warning" id="overdueWarn" style="display:none">⚠️ <b id="overdueCount">0</b> overdue borrowing(s) require immediate attention.</div>
+  <div class="tabs">
+    <div class="tab active" onclick="showTab('all',this)">All Records</div>
+    <div class="tab" onclick="showTab('active',this)">Active</div>
+    <div class="tab" onclick="showTab('overdue',this)">Overdue</div>
+    <div class="tab" onclick="showTab('returned',this)">Returned</div>
+  </div>
+  <div class="toolbar">
+    <input class="search-bar" id="search" placeholder="🔍  Search by borrower or asset..." oninput="render()">
+  </div>
+  <div class="panel">
+    <table>
+      <thead><tr><th>Borrow ID</th><th>Asset</th><th>Borrower</th><th>Borrow Date</th><th>Due Date</th><th>Status</th><th>Action</th></tr></thead>
+      <tbody id="tbody"></tbody>
+    </table>
+  </div>
+</main>
+<div class="modal-overlay" id="modal">
+  <div class="modal">
+    <div class="modal-title">New Borrow Request</div>
+    <div class="form-group"><label>Asset</label>
+      <select class="fi" id="mAsset"></select>
+    </div>
+    <div class="form-group"><label>Borrower Name</label><input id="mBorrower" placeholder="e.g. Ms. Santos"></div>
+    <div class="form-group"><label>Borrow Date</label><input type="date" id="mDate"></div>
+    <div class="form-group"><label>Due Date</label><input type="date" id="mDue"></div>
+    <div class="modal-footer">
+      <button class="btn-cancel" onclick="closeModal()">Cancel</button>
+      <button class="btn btn-primary" onclick="saveBorrow()">Confirm Borrow</button>
+    </div>
+  </div>
+</div>
+<script>
+  if(!sessionStorage.getItem('role')||sessionStorage.getItem('role')!=='admin') window.location.href='login.html';
+  document.getElementById('uname').textContent=sessionStorage.getItem('user')||'Admin';
+  let currentTab='all';
+  let borrows=JSON.parse(localStorage.getItem('borrows')||'null')||[
+    {id:'BRW-001',asset:'Projector #5',borrower:'Ms. Santos',bdate:'2024-03-01',ddate:'2024-03-08',status:'Active'},
+    {id:'BRW-002',asset:'Speaker System',borrower:'Mr. Reyes',bdate:'2024-02-20',ddate:'2024-02-25',status:'Overdue'},
+    {id:'BRW-003',asset:'Microscope #2',borrower:'Ms. Cruz',bdate:'2024-02-10',ddate:'2024-02-15',status:'Returned'},
+    {id:'BRW-004',asset:'Dell Laptop #8',borrower:'Mr. Garcia',bdate:'2024-03-05',ddate:'2024-03-12',status:'Active'},
+  ];
+  function saveBorrows(){localStorage.setItem('borrows',JSON.stringify(borrows));}
+  function statusClass(s){return s==='Active'?'s-active':s==='Returned'?'s-returned':'s-overdue';}
+  function showTab(t,el){currentTab=t;document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));el.classList.add('active');render();}
+  function render(){
+    const q=document.getElementById('search').value.toLowerCase();
+    let data=borrows.filter(b=>(!q||b.asset.toLowerCase().includes(q)||b.borrower.toLowerCase().includes(q)));
+    if(currentTab!=='all')data=data.filter(b=>b.status.toLowerCase()===currentTab);
+    const overdue=borrows.filter(b=>b.status==='Overdue').length;
+    document.getElementById('overdueWarn').style.display=overdue>0?'flex':'none';
+    document.getElementById('overdueCount').textContent=overdue;
+    document.getElementById('tbody').innerHTML=data.map(b=>`
+      <tr>
+        <td><code style="color:var(--accent2);font-size:12px">${b.id}</code></td>
+        <td><b>${b.asset}</b></td><td>${b.borrower}</td>
+        <td>${b.bdate}</td><td>${b.ddate}</td>
+        <td><span class="status-badge ${statusClass(b.status)}">${b.status}</span></td>
+        <td>${b.status!=='Returned'?`<button class="icon-btn" title="Mark Returned" onclick="markReturned('${b.id}')">✅</button>`:'<span style="color:var(--muted);font-size:12px">—</span>'}</td>
+      </tr>`).join('');
+  }
+  function markReturned(id){
+    const b=borrows.find(x=>x.id===id);
+    if(b){b.status='Returned';saveBorrows();render();}
+  }
+  function openModal(){
+    const assets=JSON.parse(localStorage.getItem('assets')||'[]');
+    const sel=document.getElementById('mAsset');
+    sel.innerHTML=assets.filter(a=>a.status==='Available').map(a=>`<option>${a.name}</option>`).join('');
+    document.getElementById('mDate').value=new Date().toISOString().slice(0,10);
+    document.getElementById('modal').classList.add('open');
+  }
+  function closeModal(){document.getElementById('modal').classList.remove('open');}
+  function saveBorrow(){
+    const asset=document.getElementById('mAsset').value;
+    const borrower=document.getElementById('mBorrower').value;
+    const bdate=document.getElementById('mDate').value;
+    const ddate=document.getElementById('mDue').value;
+    if(!asset||!borrower||!bdate||!ddate){alert('Fill all fields.');return;}
+    borrows.push({id:'BRW-'+String(borrows.length+1).padStart(3,'0'),asset,borrower,bdate,ddate,status:'Active'});
+    saveBorrows();closeModal();render();
+  }
+  function logout(){sessionStorage.clear();window.location.href='login.html';}
+  render();
+</script>
+</body>
+</html>

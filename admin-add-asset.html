@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Add Asset — Admin</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root{--bg:#0b0f1a;--surface:#131929;--surface2:#1a2438;--border:#1e2d45;--accent:#6366f1;--accent2:#06b6d4;--green:#10b981;--yellow:#f59e0b;--red:#ef4444;--text:#e2e8f0;--muted:#64748b;}
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;display:flex;}
+  .sidebar{width:240px;background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;position:fixed;height:100vh;z-index:100;}
+  .sidebar-logo{padding:24px 20px;border-bottom:1px solid var(--border);font-family:'Syne',sans-serif;font-weight:800;font-size:18px;display:flex;align-items:center;gap:10px;}
+  .sidebar-logo span{color:var(--accent2);}
+  .role-badge{margin:0 20px 16px;padding:6px 12px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:6px;font-size:11px;color:var(--accent);font-weight:600;text-transform:uppercase;letter-spacing:1px;text-align:center;}
+  .nav-section{padding:8px 12px;}
+  .nav-label{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1.5px;padding:8px 8px 4px;font-weight:600;}
+  .nav-item{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:8px;margin-bottom:2px;color:var(--muted);font-size:13px;font-weight:500;cursor:pointer;transition:all 0.2s;text-decoration:none;}
+  .nav-item:hover{background:var(--surface2);color:var(--text);}
+  .nav-item.active{background:rgba(99,102,241,0.15);color:var(--accent);}
+  .nav-item .icon{font-size:16px;width:20px;text-align:center;}
+  .sidebar-footer{margin-top:auto;padding:16px 20px;border-top:1px solid var(--border);}
+  .logout-btn{display:flex;align-items:center;gap:8px;padding:8px 12px;border-radius:8px;color:var(--red);cursor:pointer;font-size:13px;transition:background 0.2s;border:none;background:none;width:100%;font-family:inherit;}
+  .main{margin-left:240px;flex:1;padding:28px 32px;}
+  .topbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:28px;}
+  .page-title{font-family:'Syne',sans-serif;font-size:22px;font-weight:800;}
+  .user-chip{display:flex;align-items:center;gap:8px;padding:8px 14px;background:var(--surface);border:1px solid var(--border);border-radius:30px;font-size:13px;}
+  .avatar{width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--accent2));display:flex;align-items:center;justify-content:center;}
+  .form-card{background:var(--surface);border:1px solid var(--border);border-radius:18px;padding:32px;max-width:680px;}
+  .form-title{font-family:'Syne',sans-serif;font-size:17px;font-weight:700;margin-bottom:24px;padding-bottom:16px;border-bottom:1px solid var(--border);}
+  .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+  .form-group{margin-bottom:0;}
+  .form-group.full{grid-column:1/-1;}
+  label{display:block;font-size:12px;color:var(--muted);margin-bottom:7px;text-transform:uppercase;letter-spacing:0.8px;font-weight:500;}
+  input,select,textarea{width:100%;padding:12px 14px;background:var(--bg);border:1px solid var(--border);border-radius:10px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:14px;outline:none;transition:border-color 0.2s;}
+  input:focus,select:focus,textarea:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(99,102,241,0.1);}
+  textarea{resize:vertical;min-height:90px;}
+  .form-actions{display:flex;gap:12px;margin-top:24px;padding-top:20px;border-top:1px solid var(--border);}
+  .btn{padding:12px 24px;border-radius:10px;font-family:'Syne',sans-serif;font-size:14px;font-weight:600;cursor:pointer;border:none;transition:all 0.2s;}
+  .btn-primary{background:var(--accent);color:#fff;}
+  .btn-primary:hover{background:#4f46e5;transform:translateY(-1px);}
+  .btn-secondary{background:var(--surface2);border:1px solid var(--border);color:var(--text);}
+  .success-toast{position:fixed;bottom:24px;right:24px;background:var(--green);color:#fff;padding:14px 20px;border-radius:12px;font-size:13px;font-weight:600;transform:translateY(80px);opacity:0;transition:all 0.4s;z-index:9999;}
+  .success-toast.show{transform:translateY(0);opacity:1;}
+</style>
+</head>
+<body>
+<aside class="sidebar">
+  <div class="sidebar-logo"><span>🏫</span> School<span>Asset</span></div>
+  <div class="role-badge">👑 Admin Panel</div>
+  <nav class="nav-section">
+    <div class="nav-label">Overview</div>
+    <a class="nav-item" href="admin-dashboard.html"><span class="icon">📊</span> Dashboard</a>
+    <div class="nav-label">Asset Management</div>
+    <a class="nav-item" href="admin-assets.html"><span class="icon">📦</span> All Assets</a>
+    <a class="nav-item active" href="admin-add-asset.html"><span class="icon">➕</span> Add Asset</a>
+    <a class="nav-item" href="admin-categories.html"><span class="icon">🗂️</span> Categories</a>
+    <div class="nav-label">Operations</div>
+    <a class="nav-item" href="admin-borrowing.html"><span class="icon">🔄</span> Borrowing</a>
+    <a class="nav-item" href="admin-maintenance.html"><span class="icon">🔧</span> Maintenance</a>
+    <a class="nav-item" href="admin-reports.html"><span class="icon">📋</span> Reports</a>
+    <div class="nav-label">System</div>
+    <a class="nav-item" href="admin-users.html"><span class="icon">👥</span> Users</a>
+  </nav>
+  <div class="sidebar-footer"><button class="logout-btn" onclick="logout()">🚪 Logout</button></div>
+</aside>
+<main class="main">
+  <div class="topbar">
+    <div class="page-title">Add New Asset</div>
+    <div class="user-chip"><div class="avatar">👑</div> <span id="uname">Admin</span></div>
+  </div>
+  <div class="form-card">
+    <div class="form-title">📦 Asset Details</div>
+    <div class="form-grid">
+      <div class="form-group"><label>Asset Name *</label><input id="fName" placeholder="e.g. Dell Laptop #15"></div>
+      <div class="form-group"><label>Asset Tag / Serial No.</label><input id="fSerial" placeholder="e.g. SN-2024-0015"></div>
+      <div class="form-group"><label>Category *</label>
+        <select id="fCat">
+          <option value="">— Select —</option>
+          <option>IT Equipment</option><option>AV Equipment</option><option>Furniture</option>
+          <option>Lab Equipment</option><option>Sports Equipment</option><option>Office Supplies</option>
+        </select>
+      </div>
+      <div class="form-group"><label>Status</label>
+        <select id="fStatus"><option>Available</option><option>Borrowed</option><option>Maintenance</option></select>
+      </div>
+      <div class="form-group"><label>Location *</label><input id="fLoc" placeholder="e.g. Room 201, Lab 1"></div>
+      <div class="form-group"><label>Purchase Date</label><input type="date" id="fDate"></div>
+      <div class="form-group"><label>Purchase Cost (₱)</label><input type="number" id="fCost" placeholder="0.00"></div>
+      <div class="form-group"><label>Condition</label>
+        <select id="fCondition"><option>Excellent</option><option>Good</option><option>Fair</option><option>Poor</option></select>
+      </div>
+      <div class="form-group full"><label>Notes / Description</label><textarea id="fNotes" placeholder="Any additional details about this asset..."></textarea></div>
+    </div>
+    <div class="form-actions">
+      <button class="btn btn-primary" onclick="submitAsset()">✅ Save Asset</button>
+      <button class="btn btn-secondary" onclick="clearForm()">🔄 Clear Form</button>
+      <a href="admin-assets.html" style="margin-left:auto;display:flex;align-items:center;color:var(--muted);font-size:13px;text-decoration:none">← Back to Assets</a>
+    </div>
+  </div>
+</main>
+<div class="success-toast" id="toast">✅ Asset added successfully!</div>
+<script>
+  if(!sessionStorage.getItem('role')||sessionStorage.getItem('role')!=='admin') window.location.href='login.html';
+  document.getElementById('uname').textContent=sessionStorage.getItem('user')||'Admin';
+  document.getElementById('fDate').value=new Date().toISOString().slice(0,10);
+  function submitAsset(){
+    const name=document.getElementById('fName').value.trim();
+    const cat=document.getElementById('fCat').value;
+    const loc=document.getElementById('fLoc').value.trim();
+    if(!name||!cat||!loc){alert('Please fill in required fields (Name, Category, Location).');return;}
+    const assets=JSON.parse(localStorage.getItem('assets')||'[]');
+    assets.push({
+      id:'AST-'+String(assets.length+1).padStart(3,'0'),
+      name,cat,
+      status:document.getElementById('fStatus').value,
+      loc,
+      date:document.getElementById('fDate').value,
+      serial:document.getElementById('fSerial').value,
+      cost:document.getElementById('fCost').value,
+      condition:document.getElementById('fCondition').value,
+      notes:document.getElementById('fNotes').value
+    });
+    localStorage.setItem('assets',JSON.stringify(assets));
+    const toast=document.getElementById('toast');
+    toast.classList.add('show');
+    setTimeout(()=>{toast.classList.remove('show');clearForm();},2500);
+  }
+  function clearForm(){
+    ['fName','fSerial','fLoc','fCost','fNotes'].forEach(id=>document.getElementById(id).value='');
+    document.getElementById('fCat').value='';
+    document.getElementById('fDate').value=new Date().toISOString().slice(0,10);
+  }
+  function logout(){sessionStorage.clear();window.location.href='login.html';}
+</script>
+</body>
+</html>

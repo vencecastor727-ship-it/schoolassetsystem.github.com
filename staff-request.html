@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Submit Request — Staff</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root{--bg:#0b1a13;--surface:#0f2018;--surface2:#162a1e;--border:#1d3628;--accent:#10b981;--accent2:#34d399;--blue:#3b82f6;--yellow:#f59e0b;--red:#ef4444;--text:#d1fae5;--muted:#5a8a70;}
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;display:flex;}
+  .sidebar{width:240px;background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;position:fixed;height:100vh;z-index:100;}
+  .sidebar-logo{padding:24px 20px;border-bottom:1px solid var(--border);font-family:'Syne',sans-serif;font-weight:800;font-size:18px;display:flex;align-items:center;gap:10px;}
+  .sidebar-logo span{color:var(--accent2);}
+  .role-badge{margin:0 20px 16px;padding:6px 12px;background:rgba(16,185,129,0.15);border:1px solid rgba(16,185,129,0.3);border-radius:6px;font-size:11px;color:var(--accent);font-weight:600;text-transform:uppercase;letter-spacing:1px;text-align:center;}
+  .nav-section{padding:8px 12px;}
+  .nav-label{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1.5px;padding:8px 8px 4px;font-weight:600;}
+  .nav-item{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:8px;margin-bottom:2px;color:var(--muted);font-size:13px;font-weight:500;cursor:pointer;transition:all 0.2s;text-decoration:none;}
+  .nav-item:hover{background:var(--surface2);color:var(--text);}
+  .nav-item.active{background:rgba(16,185,129,0.15);color:var(--accent);}
+  .nav-item .icon{font-size:16px;width:20px;text-align:center;}
+  .sidebar-footer{margin-top:auto;padding:16px 20px;border-top:1px solid var(--border);}
+  .logout-btn{display:flex;align-items:center;gap:8px;padding:8px 12px;border-radius:8px;color:var(--red);cursor:pointer;font-size:13px;transition:background 0.2s;border:none;background:none;width:100%;font-family:inherit;}
+  .main{margin-left:240px;flex:1;padding:28px 32px;}
+  .topbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:28px;}
+  .page-title{font-family:'Syne',sans-serif;font-size:22px;font-weight:800;}
+  .user-chip{display:flex;align-items:center;gap:8px;padding:8px 14px;background:var(--surface);border:1px solid var(--border);border-radius:30px;font-size:13px;}
+  .avatar{width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--accent2));display:flex;align-items:center;justify-content:center;font-size:12px;}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:24px;align-items:start;}
+  .form-card{background:var(--surface);border:1px solid var(--border);border-radius:18px;padding:28px;}
+  .form-card-title{font-family:'Syne',sans-serif;font-size:17px;font-weight:700;margin-bottom:6px;}
+  .form-card-sub{font-size:13px;color:var(--muted);margin-bottom:24px;padding-bottom:16px;border-bottom:1px solid var(--border);}
+  .form-group{margin-bottom:16px;}
+  label{display:block;font-size:12px;color:var(--muted);margin-bottom:7px;text-transform:uppercase;letter-spacing:0.8px;}
+  input,select,textarea{width:100%;padding:12px 14px;background:var(--bg);border:1px solid var(--border);border-radius:10px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:14px;outline:none;transition:border-color 0.2s;}
+  input:focus,select:focus,textarea:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(16,185,129,0.1);}
+  textarea{resize:vertical;min-height:90px;}
+  .btn{width:100%;padding:13px;border-radius:10px;font-family:'Syne',sans-serif;font-size:14px;font-weight:700;cursor:pointer;border:none;margin-top:8px;transition:all 0.2s;}
+  .btn-green{background:var(--accent);color:#fff;}
+  .btn-green:hover{background:#059669;transform:translateY(-1px);}
+  .btn-red{background:rgba(239,68,68,0.2);border:1px solid rgba(239,68,68,0.4);color:var(--red);}
+  .btn-red:hover{background:rgba(239,68,68,0.3);}
+  .requests-panel{background:var(--surface);border:1px solid var(--border);border-radius:18px;padding:24px;margin-top:24px;}
+  .requests-title{font-family:'Syne',sans-serif;font-size:15px;font-weight:700;margin-bottom:16px;}
+  .req-item{background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:14px 16px;margin-bottom:10px;}
+  .req-item:last-child{margin-bottom:0;}
+  .req-type{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px;}
+  .req-text{font-size:13px;font-weight:500;}
+  .req-meta{font-size:11px;color:var(--muted);margin-top:6px;}
+  .req-badge{display:inline-block;padding:2px 8px;border-radius:4px;font-size:11px;font-weight:600;margin-left:8px;}
+  .rb-pending{background:rgba(245,158,11,0.15);color:var(--yellow);}
+  .rb-approved{background:rgba(16,185,129,0.15);color:var(--accent);}
+  .success-toast{position:fixed;bottom:24px;right:24px;background:var(--accent);color:#fff;padding:14px 20px;border-radius:12px;font-size:13px;font-weight:600;transform:translateY(80px);opacity:0;transition:all 0.4s;z-index:9999;}
+  .success-toast.show{transform:translateY(0);opacity:1;}
+</style>
+</head>
+<body>
+<aside class="sidebar">
+  <div class="sidebar-logo"><span>🏫</span> School<span>Asset</span></div>
+  <div class="role-badge">🧑‍💼 Staff Panel</div>
+  <nav class="nav-section">
+    <div class="nav-label">Overview</div>
+    <a class="nav-item" href="staff-dashboard.html"><span class="icon">📊</span> Dashboard</a>
+    <div class="nav-label">Assets</div>
+    <a class="nav-item" href="staff-browse-assets.html"><span class="icon">📦</span> Browse Assets</a>
+    <a class="nav-item" href="staff-borrow.html"><span class="icon">🔄</span> My Borrowings</a>
+    <div class="nav-label">Requests</div>
+    <a class="nav-item active" href="staff-request.html"><span class="icon">📝</span> Submit Request</a>
+    <a class="nav-item" href="staff-report-issue.html"><span class="icon">⚠️</span> Report Issue</a>
+  </nav>
+  <div class="sidebar-footer"><button class="logout-btn" onclick="logout()">🚪 Logout</button></div>
+</aside>
+<main class="main">
+  <div class="topbar">
+    <div class="page-title">Submit Request</div>
+    <div class="user-chip"><div class="avatar">🧑‍💼</div> <span id="uname">Staff</span></div>
+  </div>
+  <div class="grid2">
+    <div class="form-card">
+      <div class="form-card-title">📝 New Asset Request</div>
+      <div class="form-card-sub">Request a new asset or additional equipment for your department.</div>
+      <div class="form-group"><label>Request Type</label>
+        <select id="rType"><option>New Asset Request</option><option>Asset Repair Request</option><option>Asset Transfer</option><option>Additional Quantity</option></select>
+      </div>
+      <div class="form-group"><label>Asset / Item Needed</label><input id="rAsset" placeholder="e.g. 5 more plastic chairs"></div>
+      <div class="form-group"><label>Department</label><input id="rDept" placeholder="e.g. Science Department"></div>
+      <div class="form-group"><label>Reason / Justification</label><textarea id="rReason" placeholder="Why do you need this asset? How will it be used?"></textarea></div>
+      <div class="form-group"><label>Urgency</label>
+        <select id="rUrgency"><option>Normal</option><option>Urgent</option><option>Critical</option></select>
+      </div>
+      <button class="btn btn-green" onclick="submitRequest()">📤 Submit Request</button>
+    </div>
+    <div>
+      <div class="form-card">
+        <div class="form-card-title">⚠️ Report Asset Issue</div>
+        <div class="form-card-sub">Report a damaged, missing, or malfunctioning asset.</div>
+        <div class="form-group"><label>Asset Name</label>
+          <select id="iAsset"><option value="">— Select Asset —</option></select>
+        </div>
+        <div class="form-group"><label>Issue Type</label>
+          <select id="iType"><option>Damaged</option><option>Missing</option><option>Malfunction</option><option>Needs Cleaning</option></select>
+        </div>
+        <div class="form-group"><label>Description</label><textarea id="iDesc" placeholder="Describe the issue in detail..."></textarea></div>
+        <button class="btn btn-red" onclick="submitIssue()">⚠️ Report Issue</button>
+      </div>
+    </div>
+  </div>
+  <div class="requests-panel">
+    <div class="requests-title">📋 My Submitted Requests</div>
+    <div id="requestsList"><div style="color:var(--muted);font-size:13px;text-align:center;padding:20px">No requests submitted yet.</div></div>
+  </div>
+</main>
+<div class="success-toast" id="toast">✅ Submitted successfully!</div>
+<script>
+  if(!sessionStorage.getItem('role')||sessionStorage.getItem('role')!=='staff') window.location.href='login.html';
+  document.getElementById('uname').textContent=sessionStorage.getItem('user')||'Staff';
+  // Populate asset dropdown
+  const assets=JSON.parse(localStorage.getItem('assets')||'[]');
+  const sel=document.getElementById('iAsset');
+  assets.forEach(a=>{const o=document.createElement('option');o.textContent=a.name;sel.appendChild(o);});
+  if(!assets.length){['Projector #5','Dell Laptop #12','Printer HP #3','Microscope #2'].forEach(n=>{const o=document.createElement('option');o.textContent=n;sel.appendChild(o);});}
+
+  let myRequests=JSON.parse(localStorage.getItem('myRequests')||'[]');
+  function saveReqs(){localStorage.setItem('myRequests',JSON.stringify(myRequests));}
+  function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2500);}
+  function renderRequests(){
+    const list=document.getElementById('requestsList');
+    if(!myRequests.length){list.innerHTML='<div style="color:var(--muted);font-size:13px;text-align:center;padding:20px">No requests submitted yet.</div>';return;}
+    list.innerHTML=myRequests.slice().reverse().map(r=>`
+      <div class="req-item">
+        <div class="req-type">${r.type}</div>
+        <div class="req-text">${r.text} <span class="req-badge ${r.status==='Pending'?'rb-pending':'rb-approved'}">${r.status}</span></div>
+        <div class="req-meta">Submitted: ${r.date} · ${r.dept||''}</div>
+      </div>`).join('');
+  }
+  function submitRequest(){
+    const type=document.getElementById('rType').value;
+    const asset=document.getElementById('rAsset').value.trim();
+    const dept=document.getElementById('rDept').value.trim();
+    const reason=document.getElementById('rReason').value.trim();
+    const urgency=document.getElementById('rUrgency').value;
+    if(!asset||!reason){alert('Please fill in asset and reason fields.');return;}
+    myRequests.push({type,text:`${asset} — ${reason}`,dept,urgency,status:'Pending',date:new Date().toISOString().slice(0,10)});
+    saveReqs();renderRequests();
+    document.getElementById('rAsset').value='';document.getElementById('rDept').value='';document.getElementById('rReason').value='';
+    showToast('✅ Request submitted successfully!');
+  }
+  function submitIssue(){
+    const asset=document.getElementById('iAsset').value;
+    const type=document.getElementById('iType').value;
+    const desc=document.getElementById('iDesc').value.trim();
+    if(!asset||!desc){alert('Please select asset and describe the issue.');return;}
+    myRequests.push({type:'Issue Report',text:`${asset}: ${type} — ${desc}`,status:'Pending',date:new Date().toISOString().slice(0,10)});
+    saveReqs();renderRequests();
+    document.getElementById('iDesc').value='';
+    showToast('⚠️ Issue reported successfully!');
+  }
+  function logout(){sessionStorage.clear();window.location.href='login.html';}
+  renderRequests();
+</script>
+</body>
+</html>

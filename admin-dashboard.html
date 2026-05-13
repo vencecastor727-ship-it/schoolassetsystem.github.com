@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin Dashboard — SchoolAsset</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0b0f1a; --surface: #131929; --surface2: #1a2438;
+    --border: #1e2d45; --accent: #6366f1; --accent2: #06b6d4;
+    --green: #10b981; --yellow: #f59e0b; --red: #ef4444;
+    --text: #e2e8f0; --muted: #64748b;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { font-family:'DM Sans',sans-serif; background:var(--bg); color:var(--text); min-height:100vh; display:flex; }
+  /* Sidebar */
+  .sidebar {
+    width: 240px; background: var(--surface); border-right: 1px solid var(--border);
+    display: flex; flex-direction: column; position: fixed; height: 100vh; z-index: 100;
+  }
+  .sidebar-logo {
+    padding: 24px 20px; border-bottom: 1px solid var(--border);
+    font-family: 'Syne', sans-serif; font-weight: 800; font-size: 18px;
+    display: flex; align-items: center; gap: 10px;
+  }
+  .sidebar-logo .icon { font-size: 22px; }
+  .sidebar-logo span { color: var(--accent2); }
+  .role-badge {
+    margin: 0 20px 16px; padding: 6px 12px;
+    background: rgba(99,102,241,0.15); border: 1px solid rgba(99,102,241,0.3);
+    border-radius: 6px; font-size: 11px; color: var(--accent); font-weight: 600;
+    text-transform: uppercase; letter-spacing: 1px; text-align: center;
+  }
+  .nav-section { padding: 8px 12px; }
+  .nav-label { font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: 1.5px; padding: 8px 8px 4px; font-weight: 600; }
+  .nav-item {
+    display: flex; align-items: center; gap: 10px;
+    padding: 10px 12px; border-radius: 8px; margin-bottom: 2px;
+    color: var(--muted); font-size: 13px; font-weight: 500;
+    cursor: pointer; transition: all 0.2s; text-decoration: none;
+  }
+  .nav-item:hover { background: var(--surface2); color: var(--text); }
+  .nav-item.active { background: rgba(99,102,241,0.15); color: var(--accent); }
+  .nav-item .icon { font-size: 16px; width: 20px; text-align: center; }
+  .sidebar-footer {
+    margin-top: auto; padding: 16px 20px; border-top: 1px solid var(--border);
+    font-size: 12px; color: var(--muted);
+  }
+  .logout-btn {
+    display: flex; align-items: center; gap: 8px; padding: 8px 12px;
+    border-radius: 8px; color: var(--red); cursor: pointer; font-size: 13px;
+    transition: background 0.2s; border: none; background: none; width: 100%; font-family: inherit;
+  }
+  .logout-btn:hover { background: rgba(239,68,68,0.1); }
+  /* Main */
+  .main { margin-left: 240px; flex: 1; padding: 28px 32px; }
+  .topbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 28px; }
+  .page-title { font-family: 'Syne', sans-serif; font-size: 22px; font-weight: 800; }
+  .page-title span { color: var(--muted); font-weight: 400; font-size: 14px; margin-left: 10px; font-family: 'DM Sans', sans-serif; }
+  .topbar-right { display: flex; align-items: center; gap: 12px; }
+  .user-chip {
+    display: flex; align-items: center; gap: 8px; padding: 8px 14px;
+    background: var(--surface); border: 1px solid var(--border); border-radius: 30px;
+    font-size: 13px;
+  }
+  .avatar { width: 28px; height: 28px; border-radius: 50%; background: linear-gradient(135deg,var(--accent),var(--accent2)); display: flex; align-items: center; justify-content: center; font-size: 12px; }
+  /* Stats */
+  .stats-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 16px; margin-bottom: 28px; }
+  .stat-card {
+    background: var(--surface); border: 1px solid var(--border); border-radius: 14px;
+    padding: 20px 22px; position: relative; overflow: hidden;
+  }
+  .stat-card::before { content:''; position:absolute; top:0; left:0; right:0; height:2px; }
+  .stat-card.blue::before { background: var(--accent); }
+  .stat-card.cyan::before { background: var(--accent2); }
+  .stat-card.green::before { background: var(--green); }
+  .stat-card.yellow::before { background: var(--yellow); }
+  .stat-label { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px; }
+  .stat-value { font-family: 'Syne', sans-serif; font-size: 32px; font-weight: 800; line-height: 1; }
+  .stat-icon { position: absolute; right: 18px; top: 18px; font-size: 28px; opacity: 0.15; }
+  .stat-sub { font-size: 12px; color: var(--muted); margin-top: 6px; }
+  .stat-badge { display: inline-block; padding: 2px 7px; border-radius: 4px; font-size: 11px; font-weight: 600; margin-top: 6px; }
+  .badge-green { background: rgba(16,185,129,0.15); color: var(--green); }
+  .badge-yellow { background: rgba(245,158,11,0.15); color: var(--yellow); }
+  /* Grid 2col */
+  .grid2 { display: grid; grid-template-columns: 1.5fr 1fr; gap: 20px; margin-bottom: 20px; }
+  .panel { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 22px; }
+  .panel-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; }
+  .panel-title { font-family: 'Syne', sans-serif; font-size: 15px; font-weight: 700; }
+  .btn-sm {
+    padding: 6px 14px; border-radius: 7px; font-size: 12px; font-weight: 600; cursor: pointer;
+    border: 1px solid var(--border); background: var(--surface2); color: var(--text);
+    font-family: 'DM Sans', sans-serif; transition: all 0.2s; text-decoration: none; display: inline-block;
+  }
+  .btn-sm:hover { background: var(--accent); border-color: var(--accent); color: #fff; }
+  .btn-primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+  /* Table */
+  table { width: 100%; border-collapse: collapse; }
+  th { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; padding: 8px 12px; text-align: left; border-bottom: 1px solid var(--border); }
+  td { padding: 11px 12px; font-size: 13px; border-bottom: 1px solid rgba(30,45,69,0.5); }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: rgba(255,255,255,0.02); }
+  .status-dot { display: inline-flex; align-items: center; gap: 6px; }
+  .dot { width: 7px; height: 7px; border-radius: 50%; }
+  .dot-green { background: var(--green); } .dot-yellow { background: var(--yellow); } .dot-red { background: var(--red); }
+  /* Activity */
+  .activity-list { display: flex; flex-direction: column; gap: 14px; }
+  .activity-item { display: flex; gap: 12px; }
+  .act-icon { width: 34px; height: 34px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0; }
+  .act-blue { background: rgba(99,102,241,0.15); } .act-green { background: rgba(16,185,129,0.15); }
+  .act-yellow { background: rgba(245,158,11,0.15); } .act-red { background: rgba(239,68,68,0.15); }
+  .act-text { font-size: 13px; line-height: 1.4; }
+  .act-time { font-size: 11px; color: var(--muted); margin-top: 2px; }
+</style>
+</head>
+<body>
+<aside class="sidebar">
+  <div class="sidebar-logo"><span class="icon">🏫</span> School<span>Asset</span></div>
+  <div class="role-badge">👑 Admin Panel</div>
+  <nav class="nav-section">
+    <div class="nav-label">Overview</div>
+    <a class="nav-item active" href="admin-dashboard.html"><span class="icon">📊</span> Dashboard</a>
+    <div class="nav-label">Asset Management</div>
+    <a class="nav-item" href="admin-assets.html"><span class="icon">📦</span> All Assets</a>
+    <a class="nav-item" href="admin-add-asset.html"><span class="icon">➕</span> Add Asset</a>
+    <a class="nav-item" href="admin-categories.html"><span class="icon">🗂️</span> Categories</a>
+    <div class="nav-label">Operations</div>
+    <a class="nav-item" href="admin-borrowing.html"><span class="icon">🔄</span> Borrowing</a>
+    <a class="nav-item" href="admin-maintenance.html"><span class="icon">🔧</span> Maintenance</a>
+    <a class="nav-item" href="admin-reports.html"><span class="icon">📋</span> Reports</a>
+    <div class="nav-label">System</div>
+    <a class="nav-item" href="admin-users.html"><span class="icon">👥</span> Users</a>
+  </nav>
+  <div class="sidebar-footer">
+    <button class="logout-btn" onclick="logout()">🚪 Logout</button>
+  </div>
+</aside>
+<main class="main">
+  <div class="topbar">
+    <div class="page-title">Dashboard <span>Overview</span></div>
+    <div class="topbar-right">
+      <div class="user-chip"><div class="avatar">👑</div> <span id="uname">Admin</span></div>
+    </div>
+  </div>
+  <div class="stats-grid">
+    <div class="stat-card blue">
+      <div class="stat-icon">📦</div>
+      <div class="stat-label">Total Assets</div>
+      <div class="stat-value">248</div>
+      <div class="stat-badge badge-green">↑ 12 this month</div>
+    </div>
+    <div class="stat-card cyan">
+      <div class="stat-icon">✅</div>
+      <div class="stat-label">Available</div>
+      <div class="stat-value">186</div>
+      <div class="stat-sub">75% of total</div>
+    </div>
+    <div class="stat-card yellow">
+      <div class="stat-icon">🔄</div>
+      <div class="stat-label">Borrowed</div>
+      <div class="stat-value">42</div>
+      <div class="stat-badge badge-yellow">8 overdue</div>
+    </div>
+    <div class="stat-card green" style="--x:var(--red)">
+      <div class="stat-icon">🔧</div>
+      <div class="stat-label">Under Maintenance</div>
+      <div class="stat-value">20</div>
+      <div class="stat-sub">3 critical</div>
+    </div>
+  </div>
+  <div class="grid2">
+    <div class="panel">
+      <div class="panel-header">
+        <div class="panel-title">Recent Assets</div>
+        <a href="admin-assets.html" class="btn-sm">View All →</a>
+      </div>
+      <table>
+        <thead><tr><th>Asset</th><th>Category</th><th>Status</th><th>Location</th></tr></thead>
+        <tbody>
+          <tr><td>Dell Laptop #12</td><td>IT Equipment</td><td><span class="status-dot"><span class="dot dot-green"></span>Available</span></td><td>Room 201</td></tr>
+          <tr><td>Projector #5</td><td>AV Equipment</td><td><span class="status-dot"><span class="dot dot-yellow"></span>Borrowed</span></td><td>Lab 1</td></tr>
+          <tr><td>Office Chair Set</td><td>Furniture</td><td><span class="status-dot"><span class="dot dot-green"></span>Available</span></td><td>Staff Room</td></tr>
+          <tr><td>Printer HP #3</td><td>IT Equipment</td><td><span class="status-dot"><span class="dot dot-red"></span>Maintenance</span></td><td>Office</td></tr>
+          <tr><td>Science Kit #8</td><td>Lab Equipment</td><td><span class="status-dot"><span class="dot dot-green"></span>Available</span></td><td>Sci Lab</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="panel">
+      <div class="panel-header"><div class="panel-title">Recent Activity</div></div>
+      <div class="activity-list">
+        <div class="activity-item"><div class="act-icon act-blue">📦</div><div><div class="act-text">New asset <b>Chromebook #15</b> added</div><div class="act-time">2 mins ago · Admin</div></div></div>
+        <div class="activity-item"><div class="act-icon act-yellow">🔄</div><div><div class="act-text"><b>Projector #3</b> borrowed by Ms. Santos</div><div class="act-time">1 hr ago · Staff</div></div></div>
+        <div class="activity-item"><div class="act-icon act-green">✅</div><div><div class="act-text"><b>Microscope #2</b> returned successfully</div><div class="act-time">3 hrs ago · Staff</div></div></div>
+        <div class="activity-item"><div class="act-icon act-red">🔧</div><div><div class="act-text"><b>Printer HP #3</b> sent for maintenance</div><div class="act-time">Yesterday</div></div></div>
+        <div class="activity-item"><div class="act-icon act-blue">👤</div><div><div class="act-text">New staff user <b>J. Cruz</b> added</div><div class="act-time">2 days ago</div></div></div>
+      </div>
+    </div>
+  </div>
+</main>
+<script>
+  const role = sessionStorage.getItem('role');
+  if (!role || role !== 'admin') window.location.href = 'login.html';
+  document.getElementById('uname').textContent = sessionStorage.getItem('user') || 'Admin';
+  function logout() { sessionStorage.clear(); window.location.href = 'login.html'; }
+</script>
+</body>
+</html>

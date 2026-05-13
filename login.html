@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SchoolAsset — Login</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0b0f1a;
+    --surface: #131929;
+    --border: #1e2d45;
+    --accent: #3b82f6;
+    --accent2: #06b6d4;
+    --text: #e2e8f0;
+    --muted: #64748b;
+    --admin-color: #6366f1;
+    --staff-color: #10b981;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    position: relative;
+  }
+  .bg-grid {
+    position: fixed; inset: 0; z-index: 0;
+    background-image: linear-gradient(rgba(59,130,246,0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(59,130,246,0.04) 1px, transparent 1px);
+    background-size: 40px 40px;
+  }
+  .orb {
+    position: fixed; border-radius: 50%; filter: blur(80px); z-index: 0; pointer-events: none;
+  }
+  .orb1 { width: 400px; height: 400px; background: rgba(99,102,241,0.18); top: -100px; left: -100px; animation: float1 8s ease-in-out infinite; }
+  .orb2 { width: 300px; height: 300px; background: rgba(6,182,212,0.12); bottom: -80px; right: -80px; animation: float2 10s ease-in-out infinite; }
+  @keyframes float1 { 0%,100%{transform:translate(0,0)} 50%{transform:translate(40px,30px)} }
+  @keyframes float2 { 0%,100%{transform:translate(0,0)} 50%{transform:translate(-30px,-20px)} }
+  .container {
+    position: relative; z-index: 1;
+    width: 100%; max-width: 440px;
+    padding: 20px;
+  }
+  .logo-area {
+    text-align: center; margin-bottom: 36px;
+  }
+  .logo-icon {
+    width: 56px; height: 56px;
+    background: linear-gradient(135deg, var(--admin-color), var(--accent2));
+    border-radius: 16px;
+    display: inline-flex; align-items: center; justify-content: center;
+    font-size: 26px; margin-bottom: 14px;
+    box-shadow: 0 0 40px rgba(99,102,241,0.4);
+  }
+  .logo-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 24px; font-weight: 800;
+    letter-spacing: -0.5px;
+  }
+  .logo-title span { color: var(--accent2); }
+  .logo-sub { font-size: 13px; color: var(--muted); margin-top: 4px; letter-spacing: 0.5px; }
+
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 36px 32px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+  }
+  .role-tabs {
+    display: flex; gap: 8px;
+    background: var(--bg);
+    border-radius: 10px;
+    padding: 4px;
+    margin-bottom: 28px;
+  }
+  .role-tab {
+    flex: 1; padding: 10px; border: none; border-radius: 8px;
+    font-family: 'Syne', sans-serif; font-size: 13px; font-weight: 600;
+    cursor: pointer; transition: all 0.25s; color: var(--muted);
+    background: transparent; letter-spacing: 0.5px;
+  }
+  .role-tab.active[data-role="admin"] { background: var(--admin-color); color: #fff; box-shadow: 0 4px 14px rgba(99,102,241,0.4); }
+  .role-tab.active[data-role="staff"] { background: var(--staff-color); color: #fff; box-shadow: 0 4px 14px rgba(16,185,129,0.4); }
+  .role-tab:hover:not(.active) { color: var(--text); }
+
+  .form-group { margin-bottom: 18px; }
+  label { display: block; font-size: 12px; font-weight: 500; color: var(--muted); margin-bottom: 7px; letter-spacing: 0.8px; text-transform: uppercase; }
+  input {
+    width: 100%; padding: 12px 14px;
+    background: var(--bg); border: 1px solid var(--border);
+    border-radius: 10px; color: var(--text);
+    font-family: 'DM Sans', sans-serif; font-size: 14px;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    outline: none;
+  }
+  input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(59,130,246,0.15); }
+  .input-wrap { position: relative; }
+  .input-icon { position: absolute; right: 14px; top: 50%; transform: translateY(-50%); color: var(--muted); font-size: 16px; cursor: pointer; }
+
+  .btn-login {
+    width: 100%; padding: 13px;
+    border: none; border-radius: 10px;
+    font-family: 'Syne', sans-serif; font-size: 14px; font-weight: 700;
+    cursor: pointer; transition: all 0.25s;
+    margin-top: 8px; letter-spacing: 0.5px;
+  }
+  .btn-login.admin { background: linear-gradient(135deg, var(--admin-color), #818cf8); color: #fff; }
+  .btn-login.staff { background: linear-gradient(135deg, var(--staff-color), #34d399); color: #fff; }
+  .btn-login:hover { transform: translateY(-1px); box-shadow: 0 8px 24px rgba(0,0,0,0.3); }
+  .btn-login:active { transform: translateY(0); }
+
+  .divider { text-align: center; color: var(--muted); font-size: 12px; margin: 20px 0; position: relative; }
+  .divider::before, .divider::after { content: ''; position: absolute; top: 50%; width: 42%; height: 1px; background: var(--border); }
+  .divider::before { left: 0; } .divider::after { right: 0; }
+
+  .demo-creds {
+    background: rgba(59,130,246,0.06);
+    border: 1px solid rgba(59,130,246,0.15);
+    border-radius: 10px; padding: 12px 14px;
+    font-size: 12px; color: var(--muted); line-height: 1.8;
+  }
+  .demo-creds strong { color: var(--accent2); font-size: 11px; text-transform: uppercase; letter-spacing: 1px; }
+  .error-msg {
+    background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.2);
+    border-radius: 8px; padding: 10px 12px;
+    color: #f87171; font-size: 13px; margin-bottom: 14px; display: none;
+  }
+</style>
+</head>
+<body>
+<div class="bg-grid"></div>
+<div class="orb orb1"></div>
+<div class="orb orb2"></div>
+<div class="container">
+  <div class="logo-area">
+    <div class="logo-icon">🏫</div>
+    <div class="logo-title">School<span>Asset</span></div>
+    <div class="logo-sub">School Asset Tracking System</div>
+  </div>
+  <div class="card">
+    <div class="role-tabs">
+      <button class="role-tab active" data-role="admin" onclick="setRole('admin')">👑 Admin</button>
+      <button class="role-tab" data-role="staff" onclick="setRole('staff')">🧑‍💼 Staff</button>
+    </div>
+    <div class="error-msg" id="errorMsg">⚠️ Invalid credentials. Please try again.</div>
+    <div class="form-group">
+      <label>Username</label>
+      <div class="input-wrap">
+        <input type="text" id="username" placeholder="Enter your username" autocomplete="off">
+      </div>
+    </div>
+    <div class="form-group">
+      <label>Password</label>
+      <div class="input-wrap">
+        <input type="password" id="password" placeholder="Enter your password" id="pwInput">
+        <span class="input-icon" onclick="togglePw()">👁</span>
+      </div>
+    </div>
+    <button class="btn-login admin" id="loginBtn" onclick="doLogin()">Login as Admin</button>
+    <div class="divider">Demo Credentials</div>
+  </div>
+</div>
+<script>
+  let currentRole = 'admin';
+  const users = {
+    admin: { username: 'admin', password: 'admin123', page: 'admin-dashboard.html' },
+    staff: { username: 'staff', password: 'staff123', page: 'staff-dashboard.html' }
+  };
+  function setRole(role) {
+    currentRole = role;
+    document.querySelectorAll('.role-tab').forEach(t => t.classList.remove('active'));
+    document.querySelector(`[data-role="${role}"]`).classList.add('active');
+    const btn = document.getElementById('loginBtn');
+    btn.className = `btn-login ${role}`;
+    btn.textContent = `Login as ${role.charAt(0).toUpperCase()+role.slice(1)}`;
+    const demo = document.getElementById('demoCreds');
+    if (role === 'admin') {
+      demo.innerHTML = '<strong>Admin</strong><br>Username: <b>admin</b> &nbsp;|&nbsp; Password: <b>admin123</b>';
+    } else {
+      demo.innerHTML = '<strong>Staff</strong><br>Username: <b>staff</b> &nbsp;|&nbsp; Password: <b>staff123</b>';
+    }
+    document.getElementById('errorMsg').style.display = 'none';
+  }
+  function togglePw() {
+    const inp = document.getElementById('password');
+    inp.type = inp.type === 'password' ? 'text' : 'password';
+  }
+  function doLogin() {
+    const u = document.getElementById('username').value.trim();
+    const p = document.getElementById('password').value;
+    const cred = users[currentRole];
+    if (u === cred.username && p === cred.password) {
+      sessionStorage.setItem('role', currentRole);
+      sessionStorage.setItem('user', u);
+      window.location.href = cred.page;
+    } else {
+      document.getElementById('errorMsg').style.display = 'block';
+    }
+  }
+  document.addEventListener('keydown', e => { if (e.key === 'Enter') doLogin(); });
+</script>
+</body>
+</html>

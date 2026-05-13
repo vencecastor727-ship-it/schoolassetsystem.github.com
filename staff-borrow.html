@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>My Borrowings — Staff</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root{--bg:#0b1a13;--surface:#0f2018;--surface2:#162a1e;--border:#1d3628;--accent:#10b981;--accent2:#34d399;--blue:#3b82f6;--yellow:#f59e0b;--red:#ef4444;--text:#d1fae5;--muted:#5a8a70;}
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;display:flex;}
+  .sidebar{width:240px;background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;position:fixed;height:100vh;z-index:100;}
+  .sidebar-logo{padding:24px 20px;border-bottom:1px solid var(--border);font-family:'Syne',sans-serif;font-weight:800;font-size:18px;display:flex;align-items:center;gap:10px;}
+  .sidebar-logo span{color:var(--accent2);}
+  .role-badge{margin:0 20px 16px;padding:6px 12px;background:rgba(16,185,129,0.15);border:1px solid rgba(16,185,129,0.3);border-radius:6px;font-size:11px;color:var(--accent);font-weight:600;text-transform:uppercase;letter-spacing:1px;text-align:center;}
+  .nav-section{padding:8px 12px;}
+  .nav-label{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1.5px;padding:8px 8px 4px;font-weight:600;}
+  .nav-item{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:8px;margin-bottom:2px;color:var(--muted);font-size:13px;font-weight:500;cursor:pointer;transition:all 0.2s;text-decoration:none;}
+  .nav-item:hover{background:var(--surface2);color:var(--text);}
+  .nav-item.active{background:rgba(16,185,129,0.15);color:var(--accent);}
+  .nav-item .icon{font-size:16px;width:20px;text-align:center;}
+  .sidebar-footer{margin-top:auto;padding:16px 20px;border-top:1px solid var(--border);}
+  .logout-btn{display:flex;align-items:center;gap:8px;padding:8px 12px;border-radius:8px;color:var(--red);cursor:pointer;font-size:13px;transition:background 0.2s;border:none;background:none;width:100%;font-family:inherit;}
+  .main{margin-left:240px;flex:1;padding:28px 32px;}
+  .topbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:28px;}
+  .page-title{font-family:'Syne',sans-serif;font-size:22px;font-weight:800;}
+  .user-chip{display:flex;align-items:center;gap:8px;padding:8px 14px;background:var(--surface);border:1px solid var(--border);border-radius:30px;font-size:13px;}
+  .avatar{width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--accent2));display:flex;align-items:center;justify-content:center;font-size:12px;}
+  .panel{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:22px;}
+  .tabs{display:flex;gap:0;border-bottom:2px solid var(--border);margin-bottom:20px;}
+  .tab{padding:10px 20px;font-size:13px;font-weight:600;cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-2px;color:var(--muted);transition:all 0.2s;font-family:'Syne',sans-serif;}
+  .tab.active{color:var(--accent);border-color:var(--accent);}
+  table{width:100%;border-collapse:collapse;}
+  th{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;padding:10px 14px;text-align:left;border-bottom:1px solid var(--border);}
+  td{padding:13px 14px;font-size:13px;border-bottom:1px solid rgba(29,54,40,0.5);}
+  tr:last-child td{border-bottom:none;}
+  tr:hover td{background:rgba(255,255,255,0.02);}
+  .badge{display:inline-block;padding:3px 9px;border-radius:5px;font-size:11px;font-weight:600;}
+  .b-active{background:rgba(245,158,11,0.15);color:var(--yellow);}
+  .b-returned{background:rgba(16,185,129,0.15);color:var(--accent);}
+  .b-overdue{background:rgba(239,68,68,0.15);color:var(--red);}
+  .empty-state{text-align:center;padding:40px;color:var(--muted);}
+  .empty-state .icon{font-size:48px;margin-bottom:12px;}
+  .btn-sm{padding:6px 12px;border-radius:7px;background:var(--surface2);border:1px solid var(--border);color:var(--text);cursor:pointer;font-size:12px;font-family:'DM Sans',sans-serif;transition:all 0.2s;}
+  .btn-sm:hover{background:var(--accent);border-color:var(--accent);color:#fff;}
+  .overdue-row td{background:rgba(239,68,68,0.04);}
+</style>
+</head>
+<body>
+<aside class="sidebar">
+  <div class="sidebar-logo"><span>🏫</span> School<span>Asset</span></div>
+  <div class="role-badge">🧑‍💼 Staff Panel</div>
+  <nav class="nav-section">
+    <div class="nav-label">Overview</div>
+    <a class="nav-item" href="staff-dashboard.html"><span class="icon">📊</span> Dashboard</a>
+    <div class="nav-label">Assets</div>
+    <a class="nav-item" href="staff-browse-assets.html"><span class="icon">📦</span> Browse Assets</a>
+    <a class="nav-item active" href="staff-borrow.html"><span class="icon">🔄</span> My Borrowings</a>
+    <div class="nav-label">Requests</div>
+    <a class="nav-item" href="staff-request.html"><span class="icon">📝</span> Submit Request</a>
+    <a class="nav-item" href="staff-report-issue.html"><span class="icon">⚠️</span> Report Issue</a>
+  </nav>
+  <div class="sidebar-footer"><button class="logout-btn" onclick="logout()">🚪 Logout</button></div>
+</aside>
+<main class="main">
+  <div class="topbar">
+    <div class="page-title">My Borrowings</div>
+    <div class="user-chip"><div class="avatar">🧑‍💼</div> <span id="uname">Staff</span></div>
+  </div>
+  <div class="tabs">
+    <div class="tab active" onclick="showTab('all',this)">All</div>
+    <div class="tab" onclick="showTab('active',this)">Active</div>
+    <div class="tab" onclick="showTab('overdue',this)">Overdue</div>
+    <div class="tab" onclick="showTab('returned',this)">Returned</div>
+  </div>
+  <div class="panel">
+    <table>
+      <thead><tr><th>Borrow ID</th><th>Asset</th><th>Borrow Date</th><th>Due Date</th><th>Status</th><th>Action</th></tr></thead>
+      <tbody id="tbody"></tbody>
+    </table>
+    <div id="emptyState" class="empty-state" style="display:none">
+      <div class="icon">📭</div>
+      <div>No borrowing records found.</div>
+    </div>
+  </div>
+</main>
+<script>
+  if(!sessionStorage.getItem('role')||sessionStorage.getItem('role')!=='staff') window.location.href='login.html';
+  document.getElementById('uname').textContent=sessionStorage.getItem('user')||'Staff';
+  let currentTab='all';
+  function getBorrows(){
+    return JSON.parse(localStorage.getItem('borrows')||'null')||[
+      {id:'BRW-001',asset:'Projector #5',borrower:'staff',bdate:'2024-03-01',ddate:'2024-03-15',status:'Active'},
+      {id:'BRW-002',asset:'HDMI Cable Set',borrower:'staff',bdate:'2024-02-28',ddate:'2024-03-05',status:'Overdue'},
+      {id:'BRW-003',asset:'Microscope #2',borrower:'staff',bdate:'2024-02-10',ddate:'2024-02-20',status:'Returned'},
+    ];
+  }
+  function statusClass(s){return s==='Active'?'b-active':s==='Returned'?'b-returned':'b-overdue';}
+  function showTab(t,el){currentTab=t;document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));el.classList.add('active');render();}
+  function render(){
+    let data=getBorrows();
+    if(currentTab!=='all')data=data.filter(b=>b.status.toLowerCase()===currentTab);
+    const tbody=document.getElementById('tbody');
+    const empty=document.getElementById('emptyState');
+    if(!data.length){tbody.innerHTML='';empty.style.display='block';return;}
+    empty.style.display='none';
+    tbody.innerHTML=data.map(b=>`
+      <tr ${b.status==='Overdue'?'class="overdue-row"':''}>
+        <td><code style="color:var(--accent2);font-size:12px">${b.id}</code></td>
+        <td><b>${b.asset}</b></td>
+        <td>${b.bdate}</td>
+        <td>${b.ddate}${b.status==='Overdue'?' <span style="color:var(--red);font-size:11px">⚠️ OVERDUE</span>':''}</td>
+        <td><span class="badge ${statusClass(b.status)}">${b.status}</span></td>
+        <td>${b.status!=='Returned'?`<button class="btn-sm" onclick="returnItem('${b.id}')">Return</button>`:'<span style="color:var(--muted);font-size:12px">Returned</span>'}</td>
+      </tr>`).join('');
+  }
+  function returnItem(id){
+    const borrows=getBorrows();
+    const item=borrows.find(b=>b.id===id);
+    if(item&&confirm(`Confirm return of "${item.asset}"?`)){
+      item.status='Returned';
+      localStorage.setItem('borrows',JSON.stringify(borrows));
+      render();
+    }
+  }
+  function logout(){sessionStorage.clear();window.location.href='login.html';}
+  render();
+</script>
+</body>
+</html>

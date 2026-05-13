@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Maintenance — Admin</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root{--bg:#0b0f1a;--surface:#131929;--surface2:#1a2438;--border:#1e2d45;--accent:#6366f1;--accent2:#06b6d4;--green:#10b981;--yellow:#f59e0b;--red:#ef4444;--orange:#f97316;--text:#e2e8f0;--muted:#64748b;}
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;display:flex;}
+  .sidebar{width:240px;background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;position:fixed;height:100vh;z-index:100;}
+  .sidebar-logo{padding:24px 20px;border-bottom:1px solid var(--border);font-family:'Syne',sans-serif;font-weight:800;font-size:18px;display:flex;align-items:center;gap:10px;}
+  .sidebar-logo span{color:var(--accent2);}
+  .role-badge{margin:0 20px 16px;padding:6px 12px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:6px;font-size:11px;color:var(--accent);font-weight:600;text-transform:uppercase;letter-spacing:1px;text-align:center;}
+  .nav-section{padding:8px 12px;}
+  .nav-label{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1.5px;padding:8px 8px 4px;font-weight:600;}
+  .nav-item{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:8px;margin-bottom:2px;color:var(--muted);font-size:13px;font-weight:500;cursor:pointer;transition:all 0.2s;text-decoration:none;}
+  .nav-item:hover{background:var(--surface2);color:var(--text);}
+  .nav-item.active{background:rgba(99,102,241,0.15);color:var(--accent);}
+  .nav-item .icon{font-size:16px;width:20px;text-align:center;}
+  .sidebar-footer{margin-top:auto;padding:16px 20px;border-top:1px solid var(--border);}
+  .logout-btn{display:flex;align-items:center;gap:8px;padding:8px 12px;border-radius:8px;color:var(--red);cursor:pointer;font-size:13px;transition:background 0.2s;border:none;background:none;width:100%;font-family:inherit;}
+  .main{margin-left:240px;flex:1;padding:28px 32px;}
+  .topbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:28px;}
+  .page-title{font-family:'Syne',sans-serif;font-size:22px;font-weight:800;}
+  .user-chip{display:flex;align-items:center;gap:8px;padding:8px 14px;background:var(--surface);border:1px solid var(--border);border-radius:30px;font-size:13px;}
+  .avatar{width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--accent2));display:flex;align-items:center;justify-content:center;}
+  .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:24px;}
+  .stat-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:18px 22px;position:relative;overflow:hidden;}
+  .stat-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;}
+  .s1::before{background:var(--yellow);} .s2::before{background:var(--red);} .s3::before{background:var(--green);}
+  .stat-label{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;}
+  .stat-val{font-family:'Syne',sans-serif;font-size:28px;font-weight:800;}
+  .panel{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:22px;}
+  .panel-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;}
+  .panel-title{font-family:'Syne',sans-serif;font-size:15px;font-weight:700;}
+  .btn{padding:10px 18px;border-radius:10px;font-family:'Syne',sans-serif;font-size:13px;font-weight:600;cursor:pointer;border:none;transition:all 0.2s;}
+  .btn-primary{background:var(--accent);color:#fff;}
+  table{width:100%;border-collapse:collapse;}
+  th{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;padding:10px 14px;text-align:left;border-bottom:1px solid var(--border);}
+  td{padding:13px 14px;font-size:13px;border-bottom:1px solid rgba(30,45,69,0.5);}
+  tr:last-child td{border-bottom:none;}
+  tr:hover td{background:rgba(255,255,255,0.02);}
+  .badge{display:inline-block;padding:3px 9px;border-radius:5px;font-size:11px;font-weight:600;}
+  .b-pending{background:rgba(245,158,11,0.15);color:var(--yellow);}
+  .b-inprogress{background:rgba(249,115,22,0.15);color:var(--orange);}
+  .b-done{background:rgba(16,185,129,0.15);color:var(--green);}
+  .b-critical{background:rgba(239,68,68,0.15);color:var(--red);}
+  .actions{display:flex;gap:6px;}
+  .icon-btn{width:30px;height:30px;border-radius:7px;border:1px solid var(--border);background:var(--surface2);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:14px;transition:all 0.2s;}
+  .icon-btn:hover{background:var(--green);border-color:var(--green);}
+  .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.6);backdrop-filter:blur(4px);z-index:1000;display:none;align-items:center;justify-content:center;}
+  .modal-overlay.open{display:flex;}
+  .modal{background:var(--surface);border:1px solid var(--border);border-radius:18px;padding:28px;width:100%;max-width:480px;}
+  .modal-title{font-family:'Syne',sans-serif;font-size:18px;font-weight:800;margin-bottom:20px;}
+  .form-group{margin-bottom:16px;}
+  label{display:block;font-size:12px;color:var(--muted);margin-bottom:6px;text-transform:uppercase;letter-spacing:0.8px;}
+  input,select.fi,textarea{width:100%;padding:11px 13px;background:var(--bg);border:1px solid var(--border);border-radius:9px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:13px;outline:none;}
+  textarea{resize:vertical;min-height:80px;}
+  input:focus,select.fi:focus{border-color:var(--accent);}
+  .modal-footer{display:flex;gap:10px;justify-content:flex-end;margin-top:22px;}
+  .btn-cancel{padding:10px 18px;border-radius:9px;background:var(--surface2);border:1px solid var(--border);color:var(--text);cursor:pointer;font-family:'DM Sans',sans-serif;}
+</style>
+</head>
+<body>
+<aside class="sidebar">
+  <div class="sidebar-logo"><span>🏫</span> School<span>Asset</span></div>
+  <div class="role-badge">👑 Admin Panel</div>
+  <nav class="nav-section">
+    <div class="nav-label">Overview</div>
+    <a class="nav-item" href="admin-dashboard.html"><span class="icon">📊</span> Dashboard</a>
+    <div class="nav-label">Asset Management</div>
+    <a class="nav-item" href="admin-assets.html"><span class="icon">📦</span> All Assets</a>
+    <a class="nav-item" href="admin-add-asset.html"><span class="icon">➕</span> Add Asset</a>
+    <a class="nav-item" href="admin-categories.html"><span class="icon">🗂️</span> Categories</a>
+    <div class="nav-label">Operations</div>
+    <a class="nav-item" href="admin-borrowing.html"><span class="icon">🔄</span> Borrowing</a>
+    <a class="nav-item active" href="admin-maintenance.html"><span class="icon">🔧</span> Maintenance</a>
+    <a class="nav-item" href="admin-reports.html"><span class="icon">📋</span> Reports</a>
+    <div class="nav-label">System</div>
+    <a class="nav-item" href="admin-users.html"><span class="icon">👥</span> Users</a>
+  </nav>
+  <div class="sidebar-footer"><button class="logout-btn" onclick="logout()">🚪 Logout</button></div>
+</aside>
+<main class="main">
+  <div class="topbar">
+    <div class="page-title">Maintenance Tracker</div>
+    <div style="display:flex;gap:12px;align-items:center;">
+      <button class="btn btn-primary" onclick="openModal()">🔧 Log Maintenance</button>
+      <div class="user-chip"><div class="avatar">👑</div> <span id="uname">Admin</span></div>
+    </div>
+  </div>
+  <div class="stats">
+    <div class="stat-card s1"><div class="stat-label">Pending</div><div class="stat-val" id="sPending">0</div></div>
+    <div class="stat-card s2"><div class="stat-label">In Progress</div><div class="stat-val" id="sProgress">0</div></div>
+    <div class="stat-card s3"><div class="stat-label">Completed</div><div class="stat-val" id="sDone">0</div></div>
+  </div>
+  <div class="panel">
+    <div class="panel-header"><div class="panel-title">Maintenance Records</div></div>
+    <table>
+      <thead><tr><th>ID</th><th>Asset</th><th>Issue</th><th>Priority</th><th>Status</th><th>Technician</th><th>Date</th><th>Actions</th></tr></thead>
+      <tbody id="tbody"></tbody>
+    </table>
+  </div>
+</main>
+<div class="modal-overlay" id="modal">
+  <div class="modal">
+    <div class="modal-title">Log Maintenance Request</div>
+    <div class="form-group"><label>Asset</label>
+      <select class="fi" id="mAsset"></select>
+    </div>
+    <div class="form-group"><label>Issue Description</label><textarea id="mIssue" placeholder="Describe the issue..."></textarea></div>
+    <div class="form-group"><label>Priority</label>
+      <select class="fi" id="mPriority"><option>Low</option><option>Medium</option><option>High</option><option>Critical</option></select>
+    </div>
+    <div class="form-group"><label>Assigned Technician</label><input id="mTech" placeholder="e.g. Mr. dela Cruz"></div>
+    <div class="modal-footer">
+      <button class="btn-cancel" onclick="closeModal()">Cancel</button>
+      <button class="btn btn-primary" onclick="saveRecord()">Log Request</button>
+    </div>
+  </div>
+</div>
+<script>
+  if(!sessionStorage.getItem('role')||sessionStorage.getItem('role')!=='admin') window.location.href='login.html';
+  document.getElementById('uname').textContent=sessionStorage.getItem('user')||'Admin';
+  let records=JSON.parse(localStorage.getItem('maintenance')||'null')||[
+    {id:'MNT-001',asset:'Printer HP #3',issue:'Paper jam and roller damage',priority:'High',status:'In Progress',tech:'Mr. dela Cruz',date:'2024-03-01'},
+    {id:'MNT-002',asset:'Projector #2',issue:'Bulb replacement needed',priority:'Medium',status:'Pending',tech:'Ms. Tan',date:'2024-03-05'},
+    {id:'MNT-003',asset:'AC Unit Room 101',issue:'Cooling issue',priority:'Critical',status:'In Progress',tech:'Mr. Santos',date:'2024-03-08'},
+    {id:'MNT-004',asset:'Dell Laptop #7',issue:'Battery not charging',priority:'Low',status:'Completed',tech:'Mr. dela Cruz',date:'2024-02-20'},
+  ];
+  function saveRec(){localStorage.setItem('maintenance',JSON.stringify(records));}
+  function priorityBadge(p){return p==='Critical'?'b-critical':p==='High'?'b-inprogress':p==='Medium'?'b-pending':'b-done';}
+  function statusBadge(s){return s==='Pending'?'b-pending':s==='In Progress'?'b-inprogress':'b-done';}
+  function updateStats(){
+    document.getElementById('sPending').textContent=records.filter(r=>r.status==='Pending').length;
+    document.getElementById('sProgress').textContent=records.filter(r=>r.status==='In Progress').length;
+    document.getElementById('sDone').textContent=records.filter(r=>r.status==='Completed').length;
+  }
+  function render(){
+    updateStats();
+    document.getElementById('tbody').innerHTML=records.map((r,i)=>`
+      <tr>
+        <td><code style="color:var(--accent2);font-size:12px">${r.id}</code></td>
+        <td><b>${r.asset}</b></td>
+        <td style="max-width:180px;color:var(--muted)">${r.issue}</td>
+        <td><span class="badge ${priorityBadge(r.priority)}">${r.priority}</span></td>
+        <td><span class="badge ${statusBadge(r.status)}">${r.status}</span></td>
+        <td>${r.tech}</td><td>${r.date}</td>
+        <td><div class="actions">
+          ${r.status!=='Completed'?`<button class="icon-btn" title="Mark Complete" onclick="complete(${i})">✅</button>`:''}
+          <button class="icon-btn" style="--hover:var(--red)" title="Delete" onclick="del(${i})">🗑️</button>
+        </div></td>
+      </tr>`).join('');
+  }
+  function complete(i){records[i].status='Completed';saveRec();render();}
+  function del(i){if(confirm('Remove record?')){records.splice(i,1);saveRec();render();}}
+  function openModal(){
+    const assets=JSON.parse(localStorage.getItem('assets')||'[]');
+    document.getElementById('mAsset').innerHTML=assets.map(a=>`<option>${a.name}</option>`).join('');
+    document.getElementById('modal').classList.add('open');
+  }
+  function closeModal(){document.getElementById('modal').classList.remove('open');}
+  function saveRecord(){
+    const asset=document.getElementById('mAsset').value;
+    const issue=document.getElementById('mIssue').value;
+    const priority=document.getElementById('mPriority').value;
+    const tech=document.getElementById('mTech').value;
+    if(!issue||!tech){alert('Fill all fields.');return;}
+    records.push({id:'MNT-'+String(records.length+1).padStart(3,'0'),asset,issue,priority,status:'Pending',tech,date:new Date().toISOString().slice(0,10)});
+    saveRec();closeModal();render();
+  }
+  function logout(){sessionStorage.clear();window.location.href='login.html';}
+  render();
+</script>
+</body>
+</html>

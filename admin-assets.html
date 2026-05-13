@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>All Assets — Admin</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root { --bg:#0b0f1a;--surface:#131929;--surface2:#1a2438;--border:#1e2d45;--accent:#6366f1;--accent2:#06b6d4;--green:#10b981;--yellow:#f59e0b;--red:#ef4444;--text:#e2e8f0;--muted:#64748b; }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;display:flex;}
+  .sidebar{width:240px;background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;position:fixed;height:100vh;z-index:100;}
+  .sidebar-logo{padding:24px 20px;border-bottom:1px solid var(--border);font-family:'Syne',sans-serif;font-weight:800;font-size:18px;display:flex;align-items:center;gap:10px;}
+  .sidebar-logo span{color:var(--accent2);}
+  .role-badge{margin:0 20px 16px;padding:6px 12px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:6px;font-size:11px;color:var(--accent);font-weight:600;text-transform:uppercase;letter-spacing:1px;text-align:center;}
+  .nav-section{padding:8px 12px;}
+  .nav-label{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1.5px;padding:8px 8px 4px;font-weight:600;}
+  .nav-item{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:8px;margin-bottom:2px;color:var(--muted);font-size:13px;font-weight:500;cursor:pointer;transition:all 0.2s;text-decoration:none;}
+  .nav-item:hover{background:var(--surface2);color:var(--text);}
+  .nav-item.active{background:rgba(99,102,241,0.15);color:var(--accent);}
+  .nav-item .icon{font-size:16px;width:20px;text-align:center;}
+  .sidebar-footer{margin-top:auto;padding:16px 20px;border-top:1px solid var(--border);}
+  .logout-btn{display:flex;align-items:center;gap:8px;padding:8px 12px;border-radius:8px;color:var(--red);cursor:pointer;font-size:13px;transition:background 0.2s;border:none;background:none;width:100%;font-family:inherit;}
+  .logout-btn:hover{background:rgba(239,68,68,0.1);}
+  .main{margin-left:240px;flex:1;padding:28px 32px;}
+  .topbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:28px;}
+  .page-title{font-family:'Syne',sans-serif;font-size:22px;font-weight:800;}
+  .topbar-right{display:flex;align-items:center;gap:12px;}
+  .user-chip{display:flex;align-items:center;gap:8px;padding:8px 14px;background:var(--surface);border:1px solid var(--border);border-radius:30px;font-size:13px;}
+  .avatar{width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--accent2));display:flex;align-items:center;justify-content:center;font-size:12px;}
+  .toolbar{display:flex;gap:12px;margin-bottom:20px;align-items:center;flex-wrap:wrap;}
+  .search-bar{flex:1;min-width:200px;padding:10px 14px;background:var(--surface);border:1px solid var(--border);border-radius:10px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:13px;outline:none;}
+  .search-bar:focus{border-color:var(--accent);}
+  select{padding:10px 14px;background:var(--surface);border:1px solid var(--border);border-radius:10px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:13px;outline:none;cursor:pointer;}
+  .btn{padding:10px 18px;border-radius:10px;font-family:'Syne',sans-serif;font-size:13px;font-weight:600;cursor:pointer;border:none;transition:all 0.2s;}
+  .btn-primary{background:var(--accent);color:#fff;}
+  .btn-primary:hover{background:#4f46e5;}
+  .btn-danger{background:rgba(239,68,68,0.15);color:var(--red);border:1px solid rgba(239,68,68,0.3);}
+  .btn-danger:hover{background:rgba(239,68,68,0.25);}
+  .panel{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:22px;}
+  table{width:100%;border-collapse:collapse;}
+  th{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;padding:10px 14px;text-align:left;border-bottom:1px solid var(--border);}
+  td{padding:13px 14px;font-size:13px;border-bottom:1px solid rgba(30,45,69,0.5);}
+  tr:last-child td{border-bottom:none;}
+  tr:hover td{background:rgba(255,255,255,0.02);}
+  .status-badge{display:inline-block;padding:3px 9px;border-radius:5px;font-size:11px;font-weight:600;}
+  .s-available{background:rgba(16,185,129,0.15);color:var(--green);}
+  .s-borrowed{background:rgba(245,158,11,0.15);color:var(--yellow);}
+  .s-maintenance{background:rgba(239,68,68,0.15);color:var(--red);}
+  .actions{display:flex;gap:6px;}
+  .icon-btn{width:30px;height:30px;border-radius:7px;border:1px solid var(--border);background:var(--surface2);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:14px;transition:all 0.2s;}
+  .icon-btn:hover{background:var(--accent);border-color:var(--accent);}
+  /* Modal */
+  .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.6);backdrop-filter:blur(4px);z-index:1000;display:none;align-items:center;justify-content:center;}
+  .modal-overlay.open{display:flex;}
+  .modal{background:var(--surface);border:1px solid var(--border);border-radius:18px;padding:28px;width:100%;max-width:480px;box-shadow:0 25px 60px rgba(0,0,0,0.5);}
+  .modal-title{font-family:'Syne',sans-serif;font-size:18px;font-weight:800;margin-bottom:20px;}
+  .form-group{margin-bottom:16px;}
+  label{display:block;font-size:12px;color:var(--muted);margin-bottom:6px;text-transform:uppercase;letter-spacing:0.8px;}
+  input,select.finput,textarea{width:100%;padding:11px 13px;background:var(--bg);border:1px solid var(--border);border-radius:9px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:13px;outline:none;}
+  input:focus,select.finput:focus{border-color:var(--accent);}
+  .modal-footer{display:flex;gap:10px;justify-content:flex-end;margin-top:22px;}
+  .btn-cancel{padding:10px 18px;border-radius:9px;background:var(--surface2);border:1px solid var(--border);color:var(--text);cursor:pointer;font-family:'DM Sans',sans-serif;}
+  .pagination{display:flex;gap:6px;margin-top:18px;justify-content:flex-end;}
+  .pg-btn{padding:6px 12px;border-radius:7px;border:1px solid var(--border);background:var(--surface2);color:var(--text);cursor:pointer;font-size:12px;transition:all 0.2s;}
+  .pg-btn:hover,.pg-btn.active{background:var(--accent);border-color:var(--accent);}
+</style>
+</head>
+<body>
+<aside class="sidebar">
+  <div class="sidebar-logo"><span>🏫</span> School<span>Asset</span></div>
+  <div class="role-badge">👑 Admin Panel</div>
+  <nav class="nav-section">
+    <div class="nav-label">Overview</div>
+    <a class="nav-item" href="admin-dashboard.html"><span class="icon">📊</span> Dashboard</a>
+    <div class="nav-label">Asset Management</div>
+    <a class="nav-item active" href="admin-assets.html"><span class="icon">📦</span> All Assets</a>
+    <a class="nav-item" href="admin-add-asset.html"><span class="icon">➕</span> Add Asset</a>
+    <a class="nav-item" href="admin-categories.html"><span class="icon">🗂️</span> Categories</a>
+    <div class="nav-label">Operations</div>
+    <a class="nav-item" href="admin-borrowing.html"><span class="icon">🔄</span> Borrowing</a>
+    <a class="nav-item" href="admin-maintenance.html"><span class="icon">🔧</span> Maintenance</a>
+    <a class="nav-item" href="admin-reports.html"><span class="icon">📋</span> Reports</a>
+    <div class="nav-label">System</div>
+    <a class="nav-item" href="admin-users.html"><span class="icon">👥</span> Users</a>
+  </nav>
+  <div class="sidebar-footer"><button class="logout-btn" onclick="logout()">🚪 Logout</button></div>
+</aside>
+<main class="main">
+  <div class="topbar">
+    <div class="page-title">All Assets</div>
+    <div class="topbar-right">
+      <button class="btn btn-primary" onclick="openModal()">➕ Add New Asset</button>
+      <div class="user-chip"><div class="avatar">👑</div> <span id="uname">Admin</span></div>
+    </div>
+  </div>
+  <div class="toolbar">
+    <input class="search-bar" id="searchInput" placeholder="🔍  Search assets..." oninput="filterTable()">
+    <select id="filterStatus" onchange="filterTable()">
+      <option value="">All Status</option>
+      <option>Available</option><option>Borrowed</option><option>Maintenance</option>
+    </select>
+    <select id="filterCat" onchange="filterTable()">
+      <option value="">All Categories</option>
+      <option>IT Equipment</option><option>AV Equipment</option><option>Furniture</option><option>Lab Equipment</option>
+    </select>
+  </div>
+  <div class="panel">
+    <table id="assetTable">
+      <thead><tr><th>Asset ID</th><th>Name</th><th>Category</th><th>Status</th><th>Location</th><th>Added</th><th>Actions</th></tr></thead>
+      <tbody id="assetBody"></tbody>
+    </table>
+    <div class="pagination" id="pagination"></div>
+  </div>
+</main>
+
+<!-- Edit/View Modal -->
+<div class="modal-overlay" id="modal">
+  <div class="modal">
+    <div class="modal-title" id="modalTitle">Add New Asset</div>
+    <div class="form-group"><label>Asset Name</label><input id="mName" placeholder="e.g. Dell Laptop #12"></div>
+    <div class="form-group"><label>Category</label>
+      <select class="finput" id="mCat">
+        <option>IT Equipment</option><option>AV Equipment</option><option>Furniture</option><option>Lab Equipment</option>
+      </select>
+    </div>
+    <div class="form-group"><label>Status</label>
+      <select class="finput" id="mStatus">
+        <option>Available</option><option>Borrowed</option><option>Maintenance</option>
+      </select>
+    </div>
+    <div class="form-group"><label>Location</label><input id="mLoc" placeholder="e.g. Room 201"></div>
+    <div class="modal-footer">
+      <button class="btn-cancel" onclick="closeModal()">Cancel</button>
+      <button class="btn btn-primary" onclick="saveAsset()">Save Asset</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  if (!sessionStorage.getItem('role') || sessionStorage.getItem('role') !== 'admin') window.location.href = 'login.html';
+  document.getElementById('uname').textContent = sessionStorage.getItem('user') || 'Admin';
+
+  let assets = JSON.parse(localStorage.getItem('assets') || 'null') || [
+    {id:'AST-001',name:'Dell Laptop #12',cat:'IT Equipment',status:'Available',loc:'Room 201',date:'2024-01-10'},
+    {id:'AST-002',name:'Projector #5',cat:'AV Equipment',status:'Borrowed',loc:'Lab 1',date:'2024-01-15'},
+    {id:'AST-003',name:'Office Chair Set',cat:'Furniture',status:'Available',loc:'Staff Room',date:'2024-01-20'},
+    {id:'AST-004',name:'Printer HP #3',cat:'IT Equipment',status:'Maintenance',loc:'Office',date:'2024-02-01'},
+    {id:'AST-005',name:'Science Kit #8',cat:'Lab Equipment',status:'Available',loc:'Sci Lab',date:'2024-02-10'},
+    {id:'AST-006',name:'Whiteboard #4',cat:'Furniture',status:'Available',loc:'Room 101',date:'2024-02-15'},
+    {id:'AST-007',name:'Microscope #2',cat:'Lab Equipment',status:'Available',loc:'Sci Lab',date:'2024-02-20'},
+    {id:'AST-008',name:'Speaker System',cat:'AV Equipment',status:'Borrowed',loc:'Auditorium',date:'2024-03-01'},
+  ];
+  let editIdx = -1, page = 1; const perPage = 6;
+
+  function save() { localStorage.setItem('assets', JSON.stringify(assets)); }
+  function genId() { return 'AST-' + String(assets.length + 1).padStart(3,'0'); }
+  function statusClass(s) { return s==='Available'?'s-available':s==='Borrowed'?'s-borrowed':'s-maintenance'; }
+
+  function filtered() {
+    const q = document.getElementById('searchInput').value.toLowerCase();
+    const st = document.getElementById('filterStatus').value;
+    const ct = document.getElementById('filterCat').value;
+    return assets.filter(a =>
+      (!q || a.name.toLowerCase().includes(q) || a.id.toLowerCase().includes(q)) &&
+      (!st || a.status === st) && (!ct || a.cat === ct)
+    );
+  }
+
+  function renderTable() {
+    const data = filtered();
+    const total = Math.ceil(data.length / perPage);
+    const slice = data.slice((page-1)*perPage, page*perPage);
+    const tbody = document.getElementById('assetBody');
+    tbody.innerHTML = slice.map((a,i) => `
+      <tr>
+        <td><code style="color:var(--accent2);font-size:12px">${a.id}</code></td>
+        <td><b>${a.name}</b></td><td>${a.cat}</td>
+        <td><span class="status-badge ${statusClass(a.status)}">${a.status}</span></td>
+        <td>${a.loc}</td><td>${a.date}</td>
+        <td><div class="actions">
+          <button class="icon-btn" title="Edit" onclick="editAsset(${assets.indexOf(a)})">✏️</button>
+          <button class="icon-btn" title="Delete" onclick="deleteAsset(${assets.indexOf(a)})">🗑️</button>
+        </div></td>
+      </tr>`).join('');
+    const pg = document.getElementById('pagination');
+    pg.innerHTML = Array.from({length:total},(_,i)=>`<button class="pg-btn ${i+1===page?'active':''}" onclick="gotoPage(${i+1})">${i+1}</button>`).join('');
+  }
+
+  function filterTable() { page=1; renderTable(); }
+  function gotoPage(p) { page=p; renderTable(); }
+  function openModal(idx=-1) {
+    editIdx=idx;
+    document.getElementById('modalTitle').textContent = idx===-1?'Add New Asset':'Edit Asset';
+    if(idx!==-1) {
+      const a=assets[idx];
+      document.getElementById('mName').value=a.name;
+      document.getElementById('mCat').value=a.cat;
+      document.getElementById('mStatus').value=a.status;
+      document.getElementById('mLoc').value=a.loc;
+    } else {
+      document.getElementById('mName').value='';
+      document.getElementById('mLoc').value='';
+    }
+    document.getElementById('modal').classList.add('open');
+  }
+  function closeModal() { document.getElementById('modal').classList.remove('open'); }
+  function saveAsset() {
+    const a={id:editIdx===-1?genId():assets[editIdx].id,name:document.getElementById('mName').value,cat:document.getElementById('mCat').value,status:document.getElementById('mStatus').value,loc:document.getElementById('mLoc').value,date:new Date().toISOString().slice(0,10)};
+    if(!a.name||!a.loc){alert('Please fill all fields.');return;}
+    if(editIdx===-1) assets.push(a); else assets[editIdx]=a;
+    save(); closeModal(); renderTable();
+  }
+  function editAsset(i) { openModal(i); }
+  function deleteAsset(i) { if(confirm('Delete this asset?')){assets.splice(i,1);save();renderTable();} }
+  function logout() { sessionStorage.clear(); window.location.href = 'login.html'; }
+  renderTable();
+</script>
+</body>
+</html>

@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Browse Assets — Staff</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root{--bg:#0b1a13;--surface:#0f2018;--surface2:#162a1e;--border:#1d3628;--accent:#10b981;--accent2:#34d399;--blue:#3b82f6;--yellow:#f59e0b;--red:#ef4444;--text:#d1fae5;--muted:#5a8a70;}
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;display:flex;}
+  .sidebar{width:240px;background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;position:fixed;height:100vh;z-index:100;}
+  .sidebar-logo{padding:24px 20px;border-bottom:1px solid var(--border);font-family:'Syne',sans-serif;font-weight:800;font-size:18px;display:flex;align-items:center;gap:10px;}
+  .sidebar-logo span{color:var(--accent2);}
+  .role-badge{margin:0 20px 16px;padding:6px 12px;background:rgba(16,185,129,0.15);border:1px solid rgba(16,185,129,0.3);border-radius:6px;font-size:11px;color:var(--accent);font-weight:600;text-transform:uppercase;letter-spacing:1px;text-align:center;}
+  .nav-section{padding:8px 12px;}
+  .nav-label{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1.5px;padding:8px 8px 4px;font-weight:600;}
+  .nav-item{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:8px;margin-bottom:2px;color:var(--muted);font-size:13px;font-weight:500;cursor:pointer;transition:all 0.2s;text-decoration:none;}
+  .nav-item:hover{background:var(--surface2);color:var(--text);}
+  .nav-item.active{background:rgba(16,185,129,0.15);color:var(--accent);}
+  .nav-item .icon{font-size:16px;width:20px;text-align:center;}
+  .sidebar-footer{margin-top:auto;padding:16px 20px;border-top:1px solid var(--border);}
+  .logout-btn{display:flex;align-items:center;gap:8px;padding:8px 12px;border-radius:8px;color:var(--red);cursor:pointer;font-size:13px;transition:background 0.2s;border:none;background:none;width:100%;font-family:inherit;}
+  .main{margin-left:240px;flex:1;padding:28px 32px;}
+  .topbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:28px;}
+  .page-title{font-family:'Syne',sans-serif;font-size:22px;font-weight:800;}
+  .user-chip{display:flex;align-items:center;gap:8px;padding:8px 14px;background:var(--surface);border:1px solid var(--border);border-radius:30px;font-size:13px;}
+  .avatar{width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--accent2));display:flex;align-items:center;justify-content:center;font-size:12px;}
+  .toolbar{display:flex;gap:12px;margin-bottom:20px;flex-wrap:wrap;}
+  .search-bar{flex:1;min-width:200px;padding:10px 14px;background:var(--surface);border:1px solid var(--border);border-radius:10px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:13px;outline:none;}
+  .search-bar:focus{border-color:var(--accent);}
+  select{padding:10px 14px;background:var(--surface);border:1px solid var(--border);border-radius:10px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:13px;outline:none;cursor:pointer;}
+  .assets-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:16px;}
+  .asset-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:20px;transition:border-color 0.2s,transform 0.2s;}
+  .asset-card:hover{border-color:var(--accent);transform:translateY(-2px);}
+  .asset-id{font-size:11px;color:var(--muted);font-family:'DM Sans',sans-serif;margin-bottom:8px;}
+  .asset-name{font-family:'Syne',sans-serif;font-size:15px;font-weight:700;margin-bottom:4px;}
+  .asset-cat{font-size:12px;color:var(--muted);margin-bottom:12px;}
+  .asset-loc{font-size:12px;color:var(--muted);margin-bottom:14px;}
+  .asset-footer{display:flex;align-items:center;justify-content:space-between;}
+  .status-badge{display:inline-block;padding:4px 10px;border-radius:6px;font-size:11px;font-weight:600;}
+  .s-available{background:rgba(16,185,129,0.15);color:var(--accent);}
+  .s-borrowed{background:rgba(245,158,11,0.15);color:var(--yellow);}
+  .s-maintenance{background:rgba(239,68,68,0.15);color:var(--red);}
+  .btn-borrow{padding:7px 14px;border-radius:8px;background:var(--accent);color:#fff;border:none;font-family:'Syne',sans-serif;font-size:12px;font-weight:600;cursor:pointer;transition:all 0.2s;}
+  .btn-borrow:hover{background:#059669;}
+  .btn-borrow:disabled{background:var(--surface2);color:var(--muted);cursor:not-allowed;}
+  .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.6);backdrop-filter:blur(4px);z-index:1000;display:none;align-items:center;justify-content:center;}
+  .modal-overlay.open{display:flex;}
+  .modal{background:var(--surface);border:1px solid var(--border);border-radius:18px;padding:28px;width:100%;max-width:440px;}
+  .modal-title{font-family:'Syne',sans-serif;font-size:18px;font-weight:800;margin-bottom:6px;}
+  .modal-sub{font-size:13px;color:var(--muted);margin-bottom:20px;}
+  .form-group{margin-bottom:16px;}
+  label{display:block;font-size:12px;color:var(--muted);margin-bottom:6px;text-transform:uppercase;letter-spacing:0.8px;}
+  input{width:100%;padding:11px 13px;background:var(--bg);border:1px solid var(--border);border-radius:9px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:13px;outline:none;}
+  input:focus{border-color:var(--accent);}
+  .modal-footer{display:flex;gap:10px;justify-content:flex-end;margin-top:22px;}
+  .btn-cancel{padding:10px 18px;border-radius:9px;background:var(--surface2);border:1px solid var(--border);color:var(--text);cursor:pointer;font-family:'DM Sans',sans-serif;}
+  .btn-submit{padding:10px 18px;border-radius:9px;background:var(--accent);color:#fff;border:none;font-family:'Syne',sans-serif;font-size:13px;font-weight:600;cursor:pointer;}
+  .success-toast{position:fixed;bottom:24px;right:24px;background:var(--accent);color:#fff;padding:14px 20px;border-radius:12px;font-size:13px;font-weight:600;transform:translateY(80px);opacity:0;transition:all 0.4s;z-index:9999;}
+  .success-toast.show{transform:translateY(0);opacity:1;}
+</style>
+</head>
+<body>
+<aside class="sidebar">
+  <div class="sidebar-logo"><span>🏫</span> School<span>Asset</span></div>
+  <div class="role-badge">🧑‍💼 Staff Panel</div>
+  <nav class="nav-section">
+    <div class="nav-label">Overview</div>
+    <a class="nav-item" href="staff-dashboard.html"><span class="icon">📊</span> Dashboard</a>
+    <div class="nav-label">Assets</div>
+    <a class="nav-item active" href="staff-browse-assets.html"><span class="icon">📦</span> Browse Assets</a>
+    <a class="nav-item" href="staff-borrow.html"><span class="icon">🔄</span> My Borrowings</a>
+    <div class="nav-label">Requests</div>
+    <a class="nav-item" href="staff-request.html"><span class="icon">📝</span> Submit Request</a>
+    <a class="nav-item" href="staff-report-issue.html"><span class="icon">⚠️</span> Report Issue</a>
+  </nav>
+  <div class="sidebar-footer"><button class="logout-btn" onclick="logout()">🚪 Logout</button></div>
+</aside>
+<main class="main">
+  <div class="topbar">
+    <div class="page-title">Browse Assets</div>
+    <div class="user-chip"><div class="avatar">🧑‍💼</div> <span id="uname">Staff</span></div>
+  </div>
+  <div class="toolbar">
+    <input class="search-bar" id="search" placeholder="🔍  Search assets..." oninput="render()">
+    <select id="catFilter" onchange="render()">
+      <option value="">All Categories</option>
+      <option>IT Equipment</option><option>AV Equipment</option><option>Furniture</option><option>Lab Equipment</option>
+    </select>
+    <select id="statusFilter" onchange="render()">
+      <option value="">All Status</option><option>Available</option><option>Borrowed</option>
+    </select>
+  </div>
+  <div class="assets-grid" id="assetGrid"></div>
+</main>
+<!-- Borrow Modal -->
+<div class="modal-overlay" id="modal">
+  <div class="modal">
+    <div class="modal-title">Borrow Asset</div>
+    <div class="modal-sub" id="modalSub">Asset name here</div>
+    <div class="form-group"><label>Your Name</label><input id="mName" placeholder="Your full name"></div>
+    <div class="form-group"><label>Borrow Date</label><input type="date" id="mDate"></div>
+    <div class="form-group"><label>Return Date</label><input type="date" id="mReturn"></div>
+    <div class="modal-footer">
+      <button class="btn-cancel" onclick="closeModal()">Cancel</button>
+      <button class="btn-submit" onclick="confirmBorrow()">✅ Confirm Borrow</button>
+    </div>
+  </div>
+</div>
+<div class="success-toast" id="toast">✅ Borrow request submitted!</div>
+<script>
+  if(!sessionStorage.getItem('role')||sessionStorage.getItem('role')!=='staff') window.location.href='login.html';
+  document.getElementById('uname').textContent=sessionStorage.getItem('user')||'Staff';
+  let selectedAsset=null;
+  function getAssets(){
+    return JSON.parse(localStorage.getItem('assets')||'null')||[
+      {id:'AST-001',name:'Dell Laptop #12',cat:'IT Equipment',status:'Available',loc:'Room 201',date:'2024-01-10'},
+      {id:'AST-002',name:'Projector #5',cat:'AV Equipment',status:'Borrowed',loc:'Lab 1',date:'2024-01-15'},
+      {id:'AST-003',name:'Office Chair Set',cat:'Furniture',status:'Available',loc:'Staff Room',date:'2024-01-20'},
+      {id:'AST-004',name:'Science Kit #8',cat:'Lab Equipment',status:'Available',loc:'Sci Lab',date:'2024-02-10'},
+      {id:'AST-005',name:'Whiteboard #4',cat:'Furniture',status:'Available',loc:'Room 101',date:'2024-02-15'},
+      {id:'AST-006',name:'Microscope #2',cat:'Lab Equipment',status:'Available',loc:'Sci Lab',date:'2024-02-20'},
+      {id:'AST-007',name:'Speaker System',cat:'AV Equipment',status:'Borrowed',loc:'Auditorium',date:'2024-03-01'},
+    ];
+  }
+  function statusClass(s){return s==='Available'?'s-available':s==='Borrowed'?'s-borrowed':'s-maintenance';}
+  function render(){
+    const q=document.getElementById('search').value.toLowerCase();
+    const cf=document.getElementById('catFilter').value;
+    const sf=document.getElementById('statusFilter').value;
+    const data=getAssets().filter(a=>
+      (!q||a.name.toLowerCase().includes(q)||a.id.toLowerCase().includes(q))&&
+      (!cf||a.cat===cf)&&(!sf||a.status===sf)
+    );
+    document.getElementById('assetGrid').innerHTML=data.map(a=>`
+      <div class="asset-card">
+        <div class="asset-id">${a.id}</div>
+        <div class="asset-name">${a.name}</div>
+        <div class="asset-cat">📁 ${a.cat}</div>
+        <div class="asset-loc">📍 ${a.loc}</div>
+        <div class="asset-footer">
+          <span class="status-badge ${statusClass(a.status)}">${a.status}</span>
+          <button class="btn-borrow" ${a.status!=='Available'?'disabled':''} onclick='openBorrow(${JSON.stringify(a).replace(/'/g,"&#39;")})'>
+            ${a.status==='Available'?'🔄 Borrow':'Unavailable'}
+          </button>
+        </div>
+      </div>`).join('');
+  }
+  function openBorrow(asset){
+    selectedAsset=asset;
+    document.getElementById('modalSub').textContent=`Requesting: ${asset.name}`;
+    document.getElementById('mDate').value=new Date().toISOString().slice(0,10);
+    document.getElementById('modal').classList.add('open');
+  }
+  function closeModal(){document.getElementById('modal').classList.remove('open');}
+  function confirmBorrow(){
+    const name=document.getElementById('mName').value.trim()||sessionStorage.getItem('user');
+    const bdate=document.getElementById('mDate').value;
+    const rdate=document.getElementById('mReturn').value;
+    if(!rdate){alert('Please set a return date.');return;}
+    const borrows=JSON.parse(localStorage.getItem('borrows')||'[]');
+    borrows.push({id:'BRW-'+String(borrows.length+1).padStart(3,'0'),asset:selectedAsset.name,borrower:name,bdate,ddate:rdate,status:'Active'});
+    localStorage.setItem('borrows',JSON.stringify(borrows));
+    closeModal();
+    const toast=document.getElementById('toast');
+    toast.classList.add('show');
+    setTimeout(()=>toast.classList.remove('show'),2500);
+    render();
+  }
+  function logout(){sessionStorage.clear();window.location.href='login.html';}
+  render();
+</script>
+</body>
+</html>
